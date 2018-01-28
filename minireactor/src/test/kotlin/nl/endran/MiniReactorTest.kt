@@ -98,6 +98,25 @@ class MiniReactorTest {
         assertThat(reactOnceDisposable.isDisposed).isTrue()
     }
 
+    @Test
+    fun shouldRegisterAndDispatch() {
+
+        miniReactor.register(ExampleEvent1::class.java)
+                .map { ExampleEvent2(it.toString()) }
+                .reactOnce()
+
+        val event1 = ExampleEvent1("TEST_MESSAGE")
+        miniReactor.registerAndDispatch(event1, ExampleEvent2::class.java)
+                .subscribe(testObserver2)
+
+        testScheduler.triggerActions()
+
+        testObserver2.assertNotComplete();
+        testObserver2.assertNoErrors();
+        testObserver2.assertValueCount(1);
+        assertThat(testObserver2.values()).containsExactly(ExampleEvent2(event1.toString()));
+    }
+
     data class ExampleEvent1(val message: String)
     data class ExampleEvent2(val message: String)
 }
