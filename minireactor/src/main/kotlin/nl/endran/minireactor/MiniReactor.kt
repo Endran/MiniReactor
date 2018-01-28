@@ -6,6 +6,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * A very lightweight and thread-safe implementation of the Reactor Pattern, with RxJava2. MiniReactor takes in events
@@ -63,7 +64,7 @@ class MiniReactor(private val reactorScheduler: Scheduler = MiniReactor.reactorS
         return register(clazz).doOnSubscribe {
             if (!once) {
                 once = true
-                dispatch(event)
+                Observable.just(event).delay(1, TimeUnit.MICROSECONDS).subscribe { dispatch(it) }
             }
         }
     }
