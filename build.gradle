@@ -1,0 +1,66 @@
+buildscript {
+    ext.kotlin_version = '1.2.10'
+    ext.springBootVersion = '1.5.9.RELEASE'
+
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.13.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+
+    apply plugin: "java"
+    apply plugin: "com.github.ben-manes.versions"
+    apply plugin: "idea"
+    apply plugin: 'kotlin'
+
+    sourceCompatibility = '1.8'
+    targetCompatibility = "1.8"
+
+    ext.projectName = 'nl.endran.minireactor'
+    ext.projectVersion = '0.0.1'
+
+    ext.assertjVersion = "3.6.2"
+    ext.jMockitVersion = "1.31"
+    ext.jUnitVersion = "4.12"
+    ext.rxJavaVersion = '2.1.3'
+    ext.rxKotlinVersion = '2.2.0'
+
+    group = ext.projectName.toLowerCase()
+    version = ext.projectVersion
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/java'
+        main.kotlin.srcDirs += 'src/main/kotlin'
+    }
+
+    repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
+
+    dependencies {
+        testCompile "org.assertj:assertj-core:${assertjVersion}"
+        testCompile "org.jmockit:jmockit:${jMockitVersion}"
+        testCompile "junit:junit:${jUnitVersion}"
+    }
+
+    idea {
+        module {
+            inheritOutputDirs = false
+            outputDir = file("${buildDir}/classes/main/")
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+}
