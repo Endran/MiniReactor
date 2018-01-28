@@ -13,9 +13,9 @@ buildscript {
 
 allprojects {
 
-    apply plugin: "java"
-    apply plugin: "com.github.ben-manes.versions"
-    apply plugin: "idea"
+    apply plugin: 'java'
+    apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'idea'
     apply plugin: 'kotlin'
 
     sourceCompatibility = '1.8'
