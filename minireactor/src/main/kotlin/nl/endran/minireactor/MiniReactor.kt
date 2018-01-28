@@ -41,7 +41,7 @@ class MiniReactor(private val reactorScheduler: Scheduler = MiniReactor.reactorS
     fun <T> register(clazz: Class<T>): Observable<T> {
         return reactor
                 .observeOn(reactorScheduler)
-                .filter { it.javaClass.equals(clazz) }
+                .filter { clazz.isInstance(it) }
                 .map { it as T }
     }
 
@@ -63,7 +63,7 @@ class MiniReactor(private val reactorScheduler: Scheduler = MiniReactor.reactorS
         return register(clazz).doOnSubscribe {
             if (!once) {
                 once = true
-                reactor.onNext(event);
+                dispatch(event)
             }
         }
     }
