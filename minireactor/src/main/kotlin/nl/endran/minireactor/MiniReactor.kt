@@ -3,9 +3,9 @@ package nl.endran.minireactor
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.internal.schedulers.SingleScheduler
+import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 /**
@@ -71,7 +71,7 @@ class MiniReactor(private val reactorScheduler: Scheduler = MiniReactor.reactorS
 
     companion object {
         internal val reactor = PublishSubject.create<Any>();
-        private val reactorScheduler = Schedulers.from { Executors.newSingleThreadExecutor() }
+        private val reactorScheduler = RxJavaPlugins.onSingleScheduler(RxJavaPlugins.initSingleScheduler({ SingleScheduler() }));
     }
 }
 
