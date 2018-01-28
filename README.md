@@ -1,6 +1,6 @@
 # MiniReactor
 
-A very small reactor based on RxJava2
+A very small reactor based on RxJava2.
 
 ## Usage
 
