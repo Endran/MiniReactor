@@ -1,6 +1,6 @@
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Language](https://img.shields.io/badge/language-kotlin-yellowgreen.svg)](https://www.google.nl/search?q=kotlin)
-[![Build Status](https://travis-ci.org/Endran/MiniReactor.svg?branch=develop)](https://travis-ci.org/Endran/MiniReactor)
+[![Build Status](https://travis-ci.org/Endran/MiniReactor.svg?branch=master)](https://travis-ci.org/Endran/MiniReactor)
 [![](https://jitpack.io/v/endran/MiniReactor.svg)](https://jitpack.io/#endran/MiniReactor)
 # MiniReactor
 
@@ -26,7 +26,7 @@ Step 2. Add MiniReactor dependency
 
 ```
 	dependencies {
-	        compile 'com.github.endran:MiniReactor:4697706d77'
+	        compile 'com.github.endran:MiniReactor:0.1.0'
 	}
 ```
 
@@ -78,7 +78,7 @@ See [MiniReactorExamples](https://github.com/Endran/MiniReactorExamples) for var
 ```
 @Configuration
 @ComponentScan(basePackages = arrayOf("nl.endran.minireactorexamples.spring"))
-open class EngineConfig {
+open class MainConfig {
 
     @Bean
     open fun miniReactor(): MiniReactor {
