@@ -13,16 +13,16 @@ buildscript {
 
 allprojects {
 
-    apply plugin: "java"
-    apply plugin: "com.github.ben-manes.versions"
-    apply plugin: "idea"
+    apply plugin: 'java'
+    apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'idea'
     apply plugin: 'kotlin'
 
     sourceCompatibility = '1.8'
     targetCompatibility = "1.8"
 
     ext.projectName = 'nl.endran.minireactor'
-    ext.projectVersion = '0.0.1'
+    ext.projectVersion = '0.1.0'
 
     ext.assertjVersion = "3.6.2"
     ext.jMockitVersion = "1.31"
