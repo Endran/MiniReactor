@@ -26,7 +26,7 @@ Step 2. Add MiniReactor dependency
 
 ```
 	dependencies {
-	        compile 'com.github.endran:MiniReactor:0.2.0'
+	        compile 'com.github.endran:MiniReactor:0.2.1'
 	}
 ```
 
