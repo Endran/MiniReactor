@@ -47,7 +47,7 @@ class MiniReactor(private val reactorScheduler: Scheduler = createDefaultReactor
      *            The Class of the event to receive from the reactor.
      * @return The [Observable] for the specific events, already casted to the correct type.
      */
-    fun <T, R> registerReaction(clazz: Class<T>, block: (Observable<T>) -> Observable<R>): Disposable {
+    fun <T, R> reaction(clazz: Class<T>, block: (Observable<T>) -> Observable<R>): Disposable {
         return registerInternal(clazz)
                 .flatMap {
                     return@flatMap Observable.combineLatest(
@@ -58,7 +58,7 @@ class MiniReactor(private val reactorScheduler: Scheduler = createDefaultReactor
                 .subscribe { dispatch(it) }
     }
 
-    fun <T> registerLurker(clazz: Class<T>): Observable<T> {
+    fun <T> lurker(clazz: Class<T>): Observable<T> {
         return registerInternal(clazz).map { it.payload }
     }
 
@@ -82,7 +82,7 @@ class MiniReactor(private val reactorScheduler: Scheduler = createDefaultReactor
      *            The Class of the event to receive from the reactor.
      * @return The [Observable] for the specific events, already casted to the correct type.
      */
-    fun <T> dispatch(clazz: Class<T>, payload: Any, id: String = generateId()): Observable<T> {
+    fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String = generateId()): Observable<T> {
         var once = false
         return registerInternal(clazz)
                 .filter { it.id == id }

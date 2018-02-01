@@ -36,7 +36,7 @@ class MiniReactorTest {
     @Test
     fun shouldInformObservableWhenReactorIsDispatched() {
 
-        miniReactor.registerLurker(ExampleEvent1::class.java)
+        miniReactor.lurker(ExampleEvent1::class.java)
                 .subscribe(testObserver1)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
@@ -53,13 +53,13 @@ class MiniReactorTest {
     @Test
     fun shouldInformObservableWhenReactionIsReReacted() {
 
-        val reactDisposable = miniReactor.registerReaction(ExampleEvent1::class.java) {
+        val reactDisposable = miniReactor.reaction(ExampleEvent1::class.java) {
             it.map { ExampleEvent2(it.toString()) }
         }
 
-        miniReactor.registerLurker(ExampleEvent1::class.java)
+        miniReactor.lurker(ExampleEvent1::class.java)
                 .subscribe(testObserver1)
-        miniReactor.registerLurker(ExampleEvent2::class.java)
+        miniReactor.lurker(ExampleEvent2::class.java)
                 .subscribe(testObserver2)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
@@ -84,12 +84,12 @@ class MiniReactorTest {
     @Test
     fun shouldRegisterAndDispatch() {
 
-        miniReactor.registerReaction(ExampleEvent1::class.java) {
+        miniReactor.reaction(ExampleEvent1::class.java) {
             it.map { ExampleEvent2(it.toString()) }
         }
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
-        miniReactor.dispatch(ExampleEvent2::class.java, event1)
+        miniReactor.lurkAndDispatch(ExampleEvent2::class.java, event1)
                 .subscribe(testObserver2)
 
         testScheduler.triggerActions()
