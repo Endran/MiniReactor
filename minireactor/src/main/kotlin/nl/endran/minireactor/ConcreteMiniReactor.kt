@@ -20,9 +20,7 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
 
     private val publishProcessor = PublishProcessor.create<Event<*>>()
     private val reactor  = publishProcessor.onBackpressureBuffer();
-//    private val reactor = PublishSubject.create<Event<*>>().toFlowable(BackpressureStrategy.BUFFER);
 
-    // TODO: Show how we can handle backpressure
     // TODO: Also expose IDs for lurkers, to give insight in fresh info flows
 
     override fun dispatch(data: Any, id: String): String {
