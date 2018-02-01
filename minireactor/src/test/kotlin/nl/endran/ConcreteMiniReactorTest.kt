@@ -1,20 +1,17 @@
 package nl.endran
 
-import io.reactivex.disposables.Disposable
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
-import nl.endran.minireactor.MiniReactor
+import nl.endran.minireactor.ConcreteMiniReactor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class MiniReactorTest {
+class ConcreteMiniReactorTest {
 
-    lateinit var miniReactor: MiniReactor
+    lateinit var reactor: ConcreteMiniReactor
     lateinit var testScheduler: TestScheduler
-
-    val disposables = mutableListOf<Disposable>()
 
     val testObserver1 = TestObserver<ExampleEvent1>()
     val testObserver2 = TestObserver<ExampleEvent2>()
@@ -23,7 +20,7 @@ class MiniReactorTest {
     fun setUp() {
         testScheduler = TestScheduler()
         testScheduler.start()
-        miniReactor = MiniReactor(testScheduler)
+        reactor = ConcreteMiniReactor(testScheduler)
     }
 
     @After
@@ -36,11 +33,11 @@ class MiniReactorTest {
     @Test
     fun shouldInformObservableWhenReactorIsDispatched() {
 
-        miniReactor.lurker(ExampleEvent1::class.java)
+        reactor.lurker(ExampleEvent1::class.java)
                 .subscribe(testObserver1)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
-        miniReactor.dispatch(event1)
+        reactor.dispatch(event1)
 
         testScheduler.triggerActions()
 
@@ -53,17 +50,17 @@ class MiniReactorTest {
     @Test
     fun shouldInformObservableWhenReactionIsReReacted() {
 
-        val reactDisposable = miniReactor.reaction(ExampleEvent1::class.java) {
+        val reactDisposable = reactor.reaction(ExampleEvent1::class.java) {
             it.map { ExampleEvent2(it.toString()) }
         }
 
-        miniReactor.lurker(ExampleEvent1::class.java)
+        reactor.lurker(ExampleEvent1::class.java)
                 .subscribe(testObserver1)
-        miniReactor.lurker(ExampleEvent2::class.java)
+        reactor.lurker(ExampleEvent2::class.java)
                 .subscribe(testObserver2)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
-        miniReactor.dispatch(event1)
+        reactor.dispatch(event1)
 
         testScheduler.triggerActions()
         testScheduler.triggerActions()
@@ -84,12 +81,12 @@ class MiniReactorTest {
     @Test
     fun shouldRegisterAndDispatch() {
 
-        miniReactor.reaction(ExampleEvent1::class.java) {
+        reactor.reaction(ExampleEvent1::class.java) {
             it.map { ExampleEvent2(it.toString()) }
         }
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
-        miniReactor.lurkAndDispatch(ExampleEvent2::class.java, event1)
+        reactor.lurkAndDispatch(ExampleEvent2::class.java, event1)
                 .subscribe(testObserver2)
 
         testScheduler.triggerActions()
