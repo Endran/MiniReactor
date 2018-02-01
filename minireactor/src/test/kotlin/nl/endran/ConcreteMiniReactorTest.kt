@@ -1,7 +1,7 @@
 package nl.endran
 
-import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
+import io.reactivex.subscribers.TestSubscriber
 import nl.endran.minireactor.ConcreteMiniReactor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -13,8 +13,8 @@ class ConcreteMiniReactorTest {
     lateinit var reactor: ConcreteMiniReactor
     lateinit var testScheduler: TestScheduler
 
-    val testObserver1 = TestObserver<ExampleEvent1>()
-    val testObserver2 = TestObserver<ExampleEvent2>()
+    val testObserver1 = TestSubscriber<ExampleEvent1>()
+    val testObserver2 = TestSubscriber<ExampleEvent2>()
 
     @Before
     fun setUp() {
@@ -45,6 +45,25 @@ class ConcreteMiniReactorTest {
         testObserver1.assertNoErrors();
         testObserver1.assertValueCount(1);
         assertThat(testObserver1.values()).containsExactly(event1);
+    }
+
+    @Test
+    fun shouldInformObservableWithDetailedInfoWhenReactorIsDispatched() {
+
+        val testObserver = TestSubscriber<Pair<String, ExampleEvent1>>()
+
+        reactor.lurkerForSequences(ExampleEvent1::class.java)
+                .subscribe(testObserver)
+
+        val event1 = ExampleEvent1("TEST_MESSAGE")
+        reactor.dispatch(event1, "TEST_ID")
+
+        testScheduler.triggerActions()
+
+        testObserver.assertNotComplete();
+        testObserver.assertNoErrors();
+        testObserver.assertValueCount(1);
+        assertThat(testObserver.values()).containsExactly(Pair("TEST_ID", event1));
     }
 
     @Test

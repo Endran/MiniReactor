@@ -1,12 +1,13 @@
 package nl.endran.minireactor
 
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.internal.schedulers.SingleScheduler
 import io.reactivex.plugins.RxJavaPlugins
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.processors.PublishProcessor
+import nl.endran.minireactor.MiniReactor.Companion.generateId
 import java.util.concurrent.TimeUnit
 
 /**
@@ -18,7 +19,8 @@ import java.util.concurrent.TimeUnit
  */
 class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaultReactorScheduler()) : MiniReactor {
 
-    private val reactor = PublishSubject.create<Event<*>>();
+    private val publishProcessor = PublishProcessor.create<Event<*>>()
+    private val reactor = publishProcessor.onBackpressureBuffer();
 
     override fun dispatch(data: Any, id: String): String {
         dispatch(Event(data, id))
@@ -26,33 +28,38 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
     }
 
     private fun dispatch(event: Event<*>): String {
-        reactor.onNext(event)
+        publishProcessor.onNext(event)
         return event.id
     }
 
-    override fun <T, R> reaction(clazz: Class<T>, block: (Observable<T>) -> Observable<R>): Disposable {
+    override fun <T, R> reaction(clazz: Class<T>, block: (Flowable<T>) -> Flowable<R>): Disposable {
         return register(clazz)
                 .flatMap {
-                    return@flatMap Observable.combineLatest(
-                            block.invoke(Observable.just(it.data)),
-                            Observable.just(it.id),
+                    return@flatMap Flowable.combineLatest(
+                            block.invoke(Flowable.just(it.data)),
+                            Flowable.just(it.id),
                             BiFunction<R, String, Event<R>> { payload, id -> Event(payload, id) })
                 }
                 .subscribe { dispatch(it) }
     }
 
-    override fun <T> lurker(clazz: Class<T>): Observable<T> {
+    override fun <T> lurker(clazz: Class<T>): Flowable<T> {
         return register(clazz).map { it.data }
     }
 
-    private fun <T> register(clazz: Class<T>): Observable<Event<T>> {
+    override fun <T> lurkerForSequences(clazz: Class<T>): Flowable<Pair<String, T>> {
+        return register(clazz).map { Pair(it.id, it.data) }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> register(clazz: Class<T>): Flowable<Event<T>> {
         return reactor
                 .observeOn(reactorScheduler)
                 .filter { clazz.isInstance(it.data) }
                 .map { it as Event<T> }
     }
 
-    override fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String): Observable<T> {
+    override fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String): Flowable<T> {
         var once = false
         return register(clazz)
                 .filter { it.id == id }
@@ -60,7 +67,7 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
                 .doOnSubscribe {
                     if (!once) {
                         once = true
-                        Observable.just(Event(payload, id))
+                        Flowable.just(Event(payload, id))
                                 .delay(1, TimeUnit.MICROSECONDS)
                                 .subscribe { dispatch(it) }
                     }
@@ -68,15 +75,8 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
     }
 
     companion object {
-        var eventId = 0
-        fun generateId(): String {
-            synchronized(eventId) {
-                return "GenerateId_${eventId++}"
-            }
-        }
-
         private fun createDefaultReactorScheduler() = RxJavaPlugins.onSingleScheduler(RxJavaPlugins.initSingleScheduler({ SingleScheduler() }));
     }
 
-    private data class Event<out T>(val data: T, val id: String = generateId())
+    data class Event<out T>(val data: T, val id: String = generateId())
 }

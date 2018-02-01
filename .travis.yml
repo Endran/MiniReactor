@@ -4,4 +4,4 @@ jdk:
 - oraclejdk8
 
 after_success:
-- ./gradlew clean build
+- ./gradlew clean dokka build
