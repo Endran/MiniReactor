@@ -1,7 +1,7 @@
 package nl.endran
 
-import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
+import io.reactivex.subscribers.TestSubscriber
 import nl.endran.minireactor.ConcreteMiniReactor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -13,8 +13,8 @@ class ConcreteMiniReactorTest {
     lateinit var reactor: ConcreteMiniReactor
     lateinit var testScheduler: TestScheduler
 
-    val testObserver1 = TestObserver<ExampleEvent1>()
-    val testObserver2 = TestObserver<ExampleEvent2>()
+    val testObserver1 = TestSubscriber<ExampleEvent1>()
+    val testObserver2 = TestSubscriber<ExampleEvent2>()
 
     @Before
     fun setUp() {

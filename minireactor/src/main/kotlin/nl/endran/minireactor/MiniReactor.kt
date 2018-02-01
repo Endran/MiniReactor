@@ -1,6 +1,6 @@
 package nl.endran.minireactor
 
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 
 
@@ -27,27 +27,27 @@ interface MiniReactor {
      * Data will be emitted on the reactorScheduler thread.
      *
      * **Warning:** Do not block this thread. Blocking calls must be lifted from this thread to another tread,
-     * use for example [Observable.observeOn(Schedulers.io())].
+     * use for example [Flowable.observeOn(Schedulers.io())].
      *
      * @param clazz
      *          The Class of the event to receive from the reactor.
      * @param block
      *          The specific steps for the reaction pipeline.
-     * @return The [Disposable] of the [Observable.subscribe] call.
+     * @return The [Disposable] of the [Flowable.subscribe] call.
      */
-    fun <T, R> reaction(clazz: Class<T>, block: (Observable<T>) -> Observable<R>): Disposable
+    fun <T, R> reaction(clazz: Class<T>, block: (Flowable<T>) -> Flowable<R>): Disposable
 
     /**
      * Register a handler for specific data types on the reactor. Data will be emitted on the reactorScheduler thread.
      *
      * **Warning:** Do not block this thread. Blocking calls must be lifted from this thread to another tread,
-     * use for example [Observable.observeOn(Schedulers.io())].
+     * use for example [Flowable.observeOn(Schedulers.io())].
      *
      * @param clazz
      *            The Class of the event to receive from the reactor.
-     * @return The [Observable] for the specific events.
+     * @return The [Flowable] for the specific events.
      */
-    fun <T> lurker(clazz: Class<T>): Observable<T>
+    fun <T> lurker(clazz: Class<T>): Flowable<T>
 
     /**
      * A combination of [lurker] and [dispatch].
@@ -56,7 +56,7 @@ interface MiniReactor {
      * Data will be emitted on the reactorScheduler thread.
      *
      * **Warning:** Do not block this thread. Blocking calls must be lifted from this thread to another tread,
-     * use for example [Observable.observeOn(Schedulers.io())].
+     * use for example [Flowable.observeOn(Schedulers.io())].
      *
      * @param clazz
      *            The Class of the data to receive from the reactor.
@@ -64,7 +64,7 @@ interface MiniReactor {
      *            The data to inject in the reactor.
      * @param data
      *          The id of the data injection. Will generate a unique Id by default.
-     * @return The [Observable] for the specific data and id.
+     * @return The [Flowable] for the specific data and id.
      */
-    fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String = ConcreteMiniReactor.generateId()): Observable<T>
+    fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String = ConcreteMiniReactor.generateId()): Flowable<T>
 }
