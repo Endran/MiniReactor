@@ -11,7 +11,7 @@ Classes should never block the Reactor thread.
 
 ## Get it
 
-Add it in your root build.gradle at the end of repositories:
+Add JitPack in your root build.gradle at the end of repositories:
 
 ```
 	allprojects {
@@ -22,7 +22,7 @@ Add it in your root build.gradle at the end of repositories:
 	}
 ```
 
-Step 2. Add the dependency
+Step 2. Add MiniReactor dependency
 
 ```
 	dependencies {
@@ -73,7 +73,7 @@ miniReactor.lurkAndDispatch(SomeResponse::class.java, SomeRequest("Hello!!!"))
 
 ## Examples
 
-See <insert link> for various exampels on how to use MiniReactor. Below is an example with Spring:
+See [MiniReactorExamples](https://github.com/Endran/MiniReactorExamples) for various exampels on how to use MiniReactor. Below is an example with Spring:
 
 ```
 @Configuration
@@ -82,7 +82,7 @@ open class EngineConfig {
 
     @Bean
     open fun miniReactor(): MiniReactor {
-        return MiniReactor()
+        return ConcreteMiniReactor()
     }
 }
 
