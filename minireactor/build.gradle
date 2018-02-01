@@ -1,16 +1,21 @@
 buildscript {
     ext.kotlin_version = '1.2.10'
+    ext.dokka_version = '0.9.15'
     repositories {
+        jcenter()
         mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
     }
 }
 
 
 apply plugin: 'kotlin'
 apply plugin: 'maven'
+apply plugin: 'org.jetbrains.dokka'
+
 
 group = 'com.github.Endran'
 
@@ -21,4 +26,9 @@ repositories {
 dependencies {
     compile "io.reactivex.rxjava2:rxjava:${rxJavaVersion}"
     compile "io.reactivex.rxjava2:rxkotlin:${rxKotlinVersion}"
+}
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
 }
