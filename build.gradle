@@ -22,7 +22,7 @@ allprojects {
     targetCompatibility = "1.8"
 
     ext.projectName = 'nl.endran.minireactor'
-    ext.projectVersion = '0.1.1'
+    ext.projectVersion = '0.2.0'
 
     ext.assertjVersion = "3.6.2"
     ext.jMockitVersion = "1.31"
