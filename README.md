@@ -9,6 +9,27 @@ MiniReactor takes in data, from any thread, and demultiplexes them into a single
 Interested classes can register to MiniReactor to obtain this data, on the Reactor thread.
 Classes should never block the Reactor thread.
 
+## Get it
+
+Add it in your root build.gradle at the end of repositories:
+
+```
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+Step 2. Add the dependency
+
+```
+	dependencies {
+	        compile 'com.github.endran:MiniReactor:4697706d77'
+	}
+```
+
 ## Usage
 
 To use *MiniReactor* you need to define how data is used in the system,
@@ -98,7 +119,7 @@ class ExampleController(private val miniReactor: MiniReactor) {
 
 ## Interface
 
-This is the complete interface of MiniReactor.
+This is the complete interface of [MiniReactor](https://github.com/Endran/MiniReactor/blob/develop/minireactor/src/main/kotlin/nl/endran/minireactor/MiniReactor.kt).
 
 ```
 /**
