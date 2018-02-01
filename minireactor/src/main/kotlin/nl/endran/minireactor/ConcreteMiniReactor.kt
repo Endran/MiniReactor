@@ -7,6 +7,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.internal.schedulers.SingleScheduler
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.processors.PublishProcessor
+import nl.endran.minireactor.MiniReactor.Companion.generateId
 import java.util.concurrent.TimeUnit
 
 /**
@@ -19,9 +20,7 @@ import java.util.concurrent.TimeUnit
 class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaultReactorScheduler()) : MiniReactor {
 
     private val publishProcessor = PublishProcessor.create<Event<*>>()
-    private val reactor  = publishProcessor.onBackpressureBuffer();
-
-    // TODO: Also expose IDs for lurkers, to give insight in fresh info flows
+    private val reactor = publishProcessor.onBackpressureBuffer();
 
     override fun dispatch(data: Any, id: String): String {
         dispatch(Event(data, id))
@@ -48,6 +47,11 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
         return register(clazz).map { it.data }
     }
 
+    override fun <T> lurkerForSequences(clazz: Class<T>): Flowable<Pair<String, T>> {
+        return register(clazz).map { Pair(it.id, it.data) }
+    }
+
+    @Suppress("UNCHECKED_CAST")
     private fun <T> register(clazz: Class<T>): Flowable<Event<T>> {
         return reactor
                 .observeOn(reactorScheduler)
@@ -71,15 +75,8 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
     }
 
     companion object {
-        var eventId = 0
-        fun generateId(): String {
-            synchronized(eventId) {
-                return "GenerateId_${eventId++}"
-            }
-        }
-
         private fun createDefaultReactorScheduler() = RxJavaPlugins.onSingleScheduler(RxJavaPlugins.initSingleScheduler({ SingleScheduler() }));
     }
 
-    private data class Event<out T>(val data: T, val id: String = generateId())
+    data class Event<out T>(val data: T, val id: String = generateId())
 }

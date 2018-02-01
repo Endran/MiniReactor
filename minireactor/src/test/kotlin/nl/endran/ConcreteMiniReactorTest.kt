@@ -48,6 +48,25 @@ class ConcreteMiniReactorTest {
     }
 
     @Test
+    fun shouldInformObservableWithDetailedInfoWhenReactorIsDispatched() {
+
+        val testObserver = TestSubscriber<Pair<String, ExampleEvent1>>()
+
+        reactor.lurkerForSequences(ExampleEvent1::class.java)
+                .subscribe(testObserver)
+
+        val event1 = ExampleEvent1("TEST_MESSAGE")
+        reactor.dispatch(event1, "TEST_ID")
+
+        testScheduler.triggerActions()
+
+        testObserver.assertNotComplete();
+        testObserver.assertNoErrors();
+        testObserver.assertValueCount(1);
+        assertThat(testObserver.values()).containsExactly(Pair("TEST_ID", event1));
+    }
+
+    @Test
     fun shouldInformObservableWhenReactionIsReReacted() {
 
         val reactDisposable = reactor.reaction(ExampleEvent1::class.java) {
