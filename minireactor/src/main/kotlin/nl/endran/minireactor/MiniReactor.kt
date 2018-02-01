@@ -3,21 +3,24 @@ package nl.endran.minireactor
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.internal.schedulers.SingleScheduler
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 /**
- * A very lightweight and thread-safe implementation of the Reactor Pattern, with RxJava2. MiniReactor takes in events
- * of any type, from any thread, and demultiplexes them into a single thread. Interested classes can register to
+ * A very lightweight and thread-safe implementation of the Reactor Pattern, with RxJava2. MiniReactor takes in events,
+ * from any thread, and demultiplexes them into a single thread. Interested classes can register to
  * MiniReactor to obtain those events, on the Reactor thread. Classes should never block the Reactor thread.
  *
  * @constructor
  * @param reactorScheduler
  *          The Reactor Scheduler, will default to a [Scheduler] from [Executors.newSingleThreadExecutor()]
  */
-class MiniReactor(private val reactorScheduler: Scheduler = MiniReactor.reactorScheduler) {
+class MiniReactor(private val reactorScheduler: Scheduler = createDefaultReactorScheduler()) {
+
+    private val reactor = PublishSubject.create<Event<*>>();
 
     /**
      * Dispatches an event to the reactor. The reactor will output any event on the reactorScheduler thread.
@@ -25,8 +28,13 @@ class MiniReactor(private val reactorScheduler: Scheduler = MiniReactor.reactorS
      * @param event
      *            The event to dispatch onto the reactor.
      */
-    fun dispatch(event: Any) {
-        reactor.onNext(event);
+
+    fun dispatch(payload: Any, id: String = generateId()) {
+        dispatch(Event(payload, id))
+    }
+
+    private fun dispatch(event: Event<*>) {
+        reactor.onNext(event)
     }
 
     /**
@@ -39,11 +47,26 @@ class MiniReactor(private val reactorScheduler: Scheduler = MiniReactor.reactorS
      *            The Class of the event to receive from the reactor.
      * @return The [Observable] for the specific events, already casted to the correct type.
      */
-    fun <T> register(clazz: Class<T>): Observable<T> {
+    fun <T, R> registerReaction(clazz: Class<T>, block: (Observable<T>) -> Observable<R>): Disposable {
+        return registerInternal(clazz)
+                .flatMap {
+                    return@flatMap Observable.combineLatest(
+                            block.invoke(Observable.just(it.payload)),
+                            Observable.just(it.id),
+                            BiFunction<R, String, Event<R>> { payload, id -> Event(payload, id) })
+                }
+                .subscribe { dispatch(it) }
+    }
+
+    fun <T> registerLurker(clazz: Class<T>): Observable<T> {
+        return registerInternal(clazz).map { it.payload }
+    }
+
+    private fun <T> registerInternal(clazz: Class<T>): Observable<Event<T>> {
         return reactor
                 .observeOn(reactorScheduler)
-                .filter { clazz.isInstance(it) }
-                .map { it as T }
+                .filter { clazz.isInstance(it.payload) }
+                .map { it as Event<T> }
     }
 
     /**
@@ -59,41 +82,31 @@ class MiniReactor(private val reactorScheduler: Scheduler = MiniReactor.reactorS
      *            The Class of the event to receive from the reactor.
      * @return The [Observable] for the specific events, already casted to the correct type.
      */
-    fun <T> registerAndDispatch(event: Any, clazz: Class<T>): Observable<T> {
+    fun <T> dispatch(clazz: Class<T>, payload: Any, id: String = generateId()): Observable<T> {
         var once = false
-        return register(clazz).doOnSubscribe {
-            if (!once) {
-                once = true
-                Observable.just(event).delay(1, TimeUnit.MICROSECONDS).subscribe { dispatch(it) }
-            }
-        }
+        return registerInternal(clazz)
+                .filter { it.id == id }
+                .map { it.payload }
+                .doOnSubscribe {
+                    if (!once) {
+                        once = true
+                        Observable.just(Event(payload, id))
+                                .delay(1, TimeUnit.MICROSECONDS)
+                                .subscribe { dispatch(it) }
+                    }
+                }
     }
 
     companion object {
-        internal val reactor = PublishSubject.create<Any>();
-        private val reactorScheduler = RxJavaPlugins.onSingleScheduler(RxJavaPlugins.initSingleScheduler({ SingleScheduler() }));
-    }
-}
+        var eventId = 0
+        private fun generateId(): String {
+            synchronized(eventId) {
+                return "GenerateId_${eventId++}"
+            }
+        }
 
-/**
- * Subscribes to the source [Observable] and will [dispatch] any incoming events onto the reactor.
- * @receiver [Observable]
- *              The source observable.
- * @return The [Disposable] of the [Observable.subscribe] call.
- */
-fun <T> Observable<T>.react(): Disposable {
-    return this.subscribe {
-        MiniReactor.reactor.onNext(it as Any);
+        private fun createDefaultReactorScheduler() = RxJavaPlugins.onSingleScheduler(RxJavaPlugins.initSingleScheduler({ SingleScheduler() }));
     }
-}
 
-/**
- * Subscribes to the source [Observable] and will [dispatch] the first incoming event onto the reactor, automatically
- * unsubscribing after the first event.
- * @receiver [Observable]
- *              The source observable.
- * @return The [Disposable] of the [Observable.subscribe] call.
- */
-fun <T> Observable<T>.reactOnce(): Disposable {
-    return this.take(1).react()
+    private data class Event<out T>(val payload: T, val id: String = generateId())
 }

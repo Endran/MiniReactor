@@ -21,6 +21,27 @@ reactor.register(SomeResponseFromTheDatabase::class.java)
     .subscribe {
         DoSomethingWithTheResponse(it)
     }
-    
+
 reactor.dispatch(SomeRequestToTheDatabase('* from users'))
+```
+
+```
+@RestController
+public class RxJavaController {
+
+    private final MiniReactor reactor;
+
+    @Autowired
+    public RxJavaController(MiniReactor reactor) {
+        this.reactor = reactor;
+    }
+
+    @RequestMapping(path = "/dataFromDatabase", method = RequestMethod.POST)
+    public Observable<String> handleMessage(@RequestBody String message) {
+
+        return reactor.registerAndDispatch(
+                            SomeRequestToTheDatabase(message),
+                            SomeResponseFromTheDatabase::class.java)
+     }
+}
 ```

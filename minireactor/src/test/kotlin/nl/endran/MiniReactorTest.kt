@@ -4,8 +4,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import nl.endran.minireactor.MiniReactor
-import nl.endran.minireactor.react
-import nl.endran.minireactor.reactOnce
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -38,7 +36,7 @@ class MiniReactorTest {
     @Test
     fun shouldInformObservableWhenReactorIsDispatched() {
 
-        miniReactor.register(ExampleEvent1::class.java)
+        miniReactor.registerLurker(ExampleEvent1::class.java)
                 .subscribe(testObserver1)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
@@ -55,13 +53,13 @@ class MiniReactorTest {
     @Test
     fun shouldInformObservableWhenReactionIsReReacted() {
 
-        val reactDisposable = miniReactor.register(ExampleEvent1::class.java)
-                .map { ExampleEvent2(it.toString()) }
-                .react()
+        val reactDisposable = miniReactor.registerReaction(ExampleEvent1::class.java) {
+            it.map { ExampleEvent2(it.toString()) }
+        }
 
-        miniReactor.register(ExampleEvent1::class.java)
+        miniReactor.registerLurker(ExampleEvent1::class.java)
                 .subscribe(testObserver1)
-        miniReactor.register(ExampleEvent2::class.java)
+        miniReactor.registerLurker(ExampleEvent2::class.java)
                 .subscribe(testObserver2)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
@@ -84,29 +82,14 @@ class MiniReactorTest {
     }
 
     @Test
-    fun shouldRereactOnceIfAsked() {
-
-        val reactOnceDisposable = miniReactor.register(ExampleEvent1::class.java)
-                .map { ExampleEvent2(it.toString()) }
-                .reactOnce()
-
-        val event1 = ExampleEvent1("TEST_MESSAGE")
-        miniReactor.dispatch(event1)
-
-        testScheduler.triggerActions()
-
-        assertThat(reactOnceDisposable.isDisposed).isTrue()
-    }
-
-    @Test
     fun shouldRegisterAndDispatch() {
 
-        miniReactor.register(ExampleEvent1::class.java)
-                .map { ExampleEvent2(it.toString()) }
-                .reactOnce()
+        miniReactor.registerReaction(ExampleEvent1::class.java) {
+            it.map { ExampleEvent2(it.toString()) }
+        }
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
-        miniReactor.registerAndDispatch(event1, ExampleEvent2::class.java)
+        miniReactor.dispatch(ExampleEvent2::class.java, event1)
                 .subscribe(testObserver2)
 
         testScheduler.triggerActions()
