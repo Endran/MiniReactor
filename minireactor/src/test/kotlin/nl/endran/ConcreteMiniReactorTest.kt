@@ -90,6 +90,7 @@ class ConcreteMiniReactorTest {
                 .subscribe(testObserver2)
 
         testScheduler.triggerActions()
+        testScheduler.triggerActions()
 
         testObserver2.assertNotComplete();
         testObserver2.assertNoErrors();
