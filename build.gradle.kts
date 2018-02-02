@@ -28,9 +28,14 @@ subprojects {
     group = "com.github.Endran"
     version = "0.2.1"
 
+    ext["assertjVersion"] = "3.6.2"
+    ext["rxJavaVersion"] = "2.1.9"
+    ext["rxKotlinVersion"] = "2.2.0"
+    ext["jmockitVersion"] = "1.31"
+    ext["junitVersion"] = "4.12"
+
     dependencies {
         // This I really want...
-        // ... and also variables...
         // ... and version updates
     }
 }

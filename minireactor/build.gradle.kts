@@ -27,12 +27,12 @@ apply {
 }
 
 dependencies {
-    compile("io.reactivex.rxjava2:rxjava:2.1.3")
-    compile("io.reactivex.rxjava2:rxkotlin:2.2.0")
+    compile("io.reactivex.rxjava2:rxjava:${ext["rxJavaVersion"]}")
+    compile("io.reactivex.rxjava2:rxkotlin:${ext["rxKotlinVersion"]}")
 
-    testCompile("org.assertj:assertj-core:3.6.2")
-    testCompile("org.jmockit:jmockit:1.31")
-    testCompile("junit:junit:4.12")
+    testCompile("org.assertj:assertj-core:${ext["assertjVersion"]}")
+    testCompile("org.jmockit:jmockit:${ext["jmockitVersion"]}")
+    testCompile("junit:junit:${ext["junitVersion"]}")
 }
 
 val dokkaJar = task<Jar>("dokkaJar") {
