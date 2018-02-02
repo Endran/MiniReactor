@@ -41,9 +41,9 @@ class ConcreteMiniReactorTest {
 
         testScheduler.triggerActions()
 
-        testObserver1.assertNotComplete();
-        testObserver1.assertNoErrors();
-        testObserver1.assertValueCount(1);
+        assertThat(testObserver1.completions()).isEqualTo(0)
+        assertThat(testObserver1.errorCount()).isEqualTo(0)
+        assertThat(testObserver1.valueCount()).isEqualTo(1)
         assertThat(testObserver1.values()).containsExactly(event1);
     }
 
@@ -60,9 +60,9 @@ class ConcreteMiniReactorTest {
 
         testScheduler.triggerActions()
 
-        testObserver.assertNotComplete();
-        testObserver.assertNoErrors();
-        testObserver.assertValueCount(1);
+        assertThat(testObserver.completions()).isEqualTo(0)
+        assertThat(testObserver.errorCount()).isEqualTo(0)
+        assertThat(testObserver.valueCount()).isEqualTo(1)
         assertThat(testObserver.values()).containsExactly(Pair("TEST_ID", event1));
     }
 
@@ -86,14 +86,14 @@ class ConcreteMiniReactorTest {
 
         assertThat(reactDisposable.isDisposed).isFalse()
 
-        testObserver1.assertNotComplete();
-        testObserver1.assertNoErrors();
-        testObserver1.assertValueCount(1);
+        assertThat(testObserver1.completions()).isEqualTo(0)
+        assertThat(testObserver1.errorCount()).isEqualTo(0)
+        assertThat(testObserver1.valueCount()).isEqualTo(1)
         assertThat(testObserver1.values()).containsExactly(event1);
 
-        testObserver2.assertNotComplete();
-        testObserver2.assertNoErrors();
-        testObserver2.assertValueCount(1);
+        assertThat(testObserver2.completions()).isEqualTo(0)
+        assertThat(testObserver2.errorCount()).isEqualTo(0)
+        assertThat(testObserver2.valueCount()).isEqualTo(1)
         assertThat(testObserver2.values()).containsExactly(ExampleEvent2(event1.toString()));
     }
 
@@ -111,9 +111,9 @@ class ConcreteMiniReactorTest {
         testScheduler.triggerActions()
         testScheduler.triggerActions()
 
-        testObserver2.assertNotComplete();
-        testObserver2.assertNoErrors();
-        testObserver2.assertValueCount(1);
+        assertThat(testObserver2.completions()).isEqualTo(0)
+        assertThat(testObserver2.errorCount()).isEqualTo(0)
+        assertThat(testObserver2.valueCount()).isEqualTo(1)
         assertThat(testObserver2.values()).containsExactly(ExampleEvent2(event1.toString()));
     }
 
