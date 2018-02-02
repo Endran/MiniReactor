@@ -38,7 +38,7 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
                     return@flatMap Flowable.combineLatest(
                             block.invoke(Flowable.just(it.data)),
                             Flowable.just(it.id),
-                            BiFunction<R, String, Event<R>> { payload, id -> Event(payload, id) })
+                            BiFunction<R, String, Event<R>> { payload, id -> Event(payload, "$id>") })
                 }
                 .subscribe { dispatch(it) }
     }
@@ -62,7 +62,7 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
     override fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String): Flowable<T> {
         var once = false
         return register(clazz)
-                .filter { it.id == id }
+                .filter { it.id.startsWith(id) }
                 .map { it.data }
                 .doOnSubscribe {
                     if (!once) {
