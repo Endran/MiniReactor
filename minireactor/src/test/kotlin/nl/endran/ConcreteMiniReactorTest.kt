@@ -10,11 +10,11 @@ import org.junit.Test
 
 class ConcreteMiniReactorTest {
 
-    lateinit var reactor: ConcreteMiniReactor
-    lateinit var testScheduler: TestScheduler
+    private lateinit var reactor: ConcreteMiniReactor
+    private lateinit var testScheduler: TestScheduler
 
-    val testObserver1 = TestSubscriber<ExampleEvent1>()
-    val testObserver2 = TestSubscriber<ExampleEvent2>()
+    private val testObserver1 = TestSubscriber<ExampleEvent1>()
+    private val testObserver2 = TestSubscriber<ExampleEvent2>()
 
     @Before
     fun setUp() {
@@ -117,6 +117,6 @@ class ConcreteMiniReactorTest {
         assertThat(testObserver2.values()).containsExactly(ExampleEvent2(event1.toString()));
     }
 
-    data class ExampleEvent1(val message: String)
-    data class ExampleEvent2(val message: String)
+    private data class ExampleEvent1(val message: String)
+    private data class ExampleEvent2(val message: String)
 }
