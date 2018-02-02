@@ -9,6 +9,7 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
     }
 
     dependencies {
