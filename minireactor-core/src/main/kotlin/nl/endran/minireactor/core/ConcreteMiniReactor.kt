@@ -1,4 +1,4 @@
-package nl.endran.minireactor
+package nl.endran.minireactor.core
 
 import io.reactivex.Flowable
 import io.reactivex.Scheduler
@@ -7,7 +7,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.internal.schedulers.SingleScheduler
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.processors.PublishProcessor
-import nl.endran.minireactor.MiniReactor.Companion.generateId
+import nl.endran.minireactor.core.MiniReactor.Companion.generateId
 import java.util.concurrent.TimeUnit
 
 /**

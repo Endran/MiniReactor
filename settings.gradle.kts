@@ -1,2 +1,2 @@
 rootProject.name = "MiniReactor"
-include("minireactor")
+include("minireactor-core")

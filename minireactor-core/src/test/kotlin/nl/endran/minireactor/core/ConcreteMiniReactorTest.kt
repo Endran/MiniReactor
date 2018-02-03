@@ -1,8 +1,7 @@
-package nl.endran
+package nl.endran.minireactor.core
 
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subscribers.TestSubscriber
-import nl.endran.minireactor.ConcreteMiniReactor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
