@@ -12,8 +12,8 @@ class ConcreteMiniReactorTest {
     private lateinit var reactor: ConcreteMiniReactor
     private lateinit var testScheduler: TestScheduler
 
-    private val testObserver1 = TestSubscriber<ExampleEvent1>()
-    private val testObserver2 = TestSubscriber<ExampleEvent2>()
+    private val testSubscriber1 = TestSubscriber<ExampleEvent1>()
+    private val testSubscriber2 = TestSubscriber<ExampleEvent2>()
 
     @Before
     fun setUp() {
@@ -25,25 +25,25 @@ class ConcreteMiniReactorTest {
     @After
     fun tearDown() {
         testScheduler.shutdown()
-        testObserver1.dispose()
-        testObserver2.dispose()
+        testSubscriber1.dispose()
+        testSubscriber2.dispose()
     }
 
     @Test
     fun shouldInformObservableWhenReactorIsDispatched() {
 
         reactor.lurker(ExampleEvent1::class.java)
-                .subscribe(testObserver1)
+                .subscribe(testSubscriber1)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
         reactor.dispatch(event1)
 
         testScheduler.triggerActions()
 
-        assertThat(testObserver1.completions()).isEqualTo(0)
-        assertThat(testObserver1.errorCount()).isEqualTo(0)
-        assertThat(testObserver1.valueCount()).isEqualTo(1)
-        assertThat(testObserver1.values()).containsExactly(event1);
+        assertThat(testSubscriber1.completions()).isEqualTo(0)
+        assertThat(testSubscriber1.errorCount()).isEqualTo(0)
+        assertThat(testSubscriber1.valueCount()).isEqualTo(1)
+        assertThat(testSubscriber1.values()).containsExactly(event1);
     }
 
     @Test
@@ -73,9 +73,9 @@ class ConcreteMiniReactorTest {
         }
 
         reactor.lurker(ExampleEvent1::class.java)
-                .subscribe(testObserver1)
+                .subscribe(testSubscriber1)
         reactor.lurker(ExampleEvent2::class.java)
-                .subscribe(testObserver2)
+                .subscribe(testSubscriber2)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
         reactor.dispatch(event1)
@@ -85,15 +85,15 @@ class ConcreteMiniReactorTest {
 
         assertThat(reactDisposable.isDisposed).isFalse()
 
-        assertThat(testObserver1.completions()).isEqualTo(0)
-        assertThat(testObserver1.errorCount()).isEqualTo(0)
-        assertThat(testObserver1.valueCount()).isEqualTo(1)
-        assertThat(testObserver1.values()).containsExactly(event1);
+        assertThat(testSubscriber1.completions()).isEqualTo(0)
+        assertThat(testSubscriber1.errorCount()).isEqualTo(0)
+        assertThat(testSubscriber1.valueCount()).isEqualTo(1)
+        assertThat(testSubscriber1.values()).containsExactly(event1);
 
-        assertThat(testObserver2.completions()).isEqualTo(0)
-        assertThat(testObserver2.errorCount()).isEqualTo(0)
-        assertThat(testObserver2.valueCount()).isEqualTo(1)
-        assertThat(testObserver2.values()).containsExactly(ExampleEvent2(event1.toString()));
+        assertThat(testSubscriber2.completions()).isEqualTo(0)
+        assertThat(testSubscriber2.errorCount()).isEqualTo(0)
+        assertThat(testSubscriber2.valueCount()).isEqualTo(1)
+        assertThat(testSubscriber2.values()).containsExactly(ExampleEvent2(event1.toString()));
     }
 
     @Test
@@ -105,15 +105,43 @@ class ConcreteMiniReactorTest {
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
         reactor.lurkAndDispatch(ExampleEvent2::class.java, event1)
-                .subscribe(testObserver2)
+                .subscribe(testSubscriber2)
 
         testScheduler.triggerActions()
         testScheduler.triggerActions()
 
-        assertThat(testObserver2.completions()).isEqualTo(0)
-        assertThat(testObserver2.errorCount()).isEqualTo(0)
-        assertThat(testObserver2.valueCount()).isEqualTo(1)
-        assertThat(testObserver2.values()).containsExactly(ExampleEvent2(event1.toString()));
+        assertThat(testSubscriber2.completions()).isEqualTo(0)
+        assertThat(testSubscriber2.errorCount()).isEqualTo(0)
+        assertThat(testSubscriber2.valueCount()).isEqualTo(1)
+        assertThat(testSubscriber2.values()).containsExactly(ExampleEvent2(event1.toString()));
+    }
+
+    @Test
+    fun shouldCountClassesCorrectly() {
+
+        reactor.lurker(ExampleEvent1::class.java)
+                .subscribe(testSubscriber1)
+
+        assertThat(reactor.isClassSupported(ExampleEvent1::class.java)).isTrue()
+        assertThat(reactor.isClassSupported(ExampleEvent2::class.java)).isFalse()
+        assertThat(reactor.isClassSupported(Object::class.java)).isFalse()
+
+        reactor.lurker(Object::class.java)
+                .subscribe(TestSubscriber<Object>())
+
+        assertThat(reactor.isClassSupported(ExampleEvent1::class.java)).isTrue()
+        assertThat(reactor.isClassSupported(ExampleEvent2::class.java)).isFalse()
+        assertThat(reactor.isClassSupported(Object::class.java)).isTrue()
+
+        reactor.lurker(ExampleEvent2::class.java)
+                .subscribe(testSubscriber2)
+        testSubscriber1.dispose()
+        testScheduler.triggerActions()
+
+        assertThat(reactor.isClassSupported(ExampleEvent1::class.java)).isFalse()
+        assertThat(reactor.isClassSupported(ExampleEvent2::class.java)).isTrue()
+        assertThat(reactor.isClassSupported(Object::class.java)).isTrue()
+
     }
 
     private data class ExampleEvent1(val message: String)

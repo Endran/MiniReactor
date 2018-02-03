@@ -113,9 +113,10 @@ interface MiniReactor {
 
     companion object {
         var eventId = 0
-        fun generateId(): String {
+        @JvmOverloads
+        fun generateId(postFix: String = "GEN_ID"): String {
             synchronized(eventId) {
-                return "${eventId++}_GEN_ID"
+                return "${eventId++}_$postFix"
             }
         }
     }

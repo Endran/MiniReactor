@@ -21,13 +21,17 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
 
     private val publishProcessor = PublishProcessor.create<Event<*>>()
     private val reactor = publishProcessor.onBackpressureBuffer();
+    private val classCountMap = mutableMapOf<Class<*>, Int>()
 
     override fun dispatch(data: Any, id: String): String {
         dispatch(Event(data, id))
         return id;
     }
 
-    private fun dispatch(event: Event<*>): String {
+    fun dispatch(event: Event<*>): String {
+        if (isClassSupported(event.data!!.javaClass)) {
+
+        }
         publishProcessor.onNext(event)
         return event.id
     }
@@ -57,7 +61,14 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
                 .observeOn(reactorScheduler)
                 .filter { clazz.isInstance(it.data) }
                 .map { it as Event<T> }
+                .doOnSubscribe {
+                    classCountMap[clazz] = classCountMap.getOrDefault(clazz, 0) + 1
+                }
+                .doOnCancel {
+                    classCountMap[clazz] = classCountMap.getOrDefault(clazz, 0) - 1
+                }
     }
+
 
     override fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String): Flowable<T> {
         var once = false
@@ -72,6 +83,17 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
                                 .subscribe { dispatch(it) }
                     }
                 }
+    }
+
+    fun isClassSupported(clazz: Class<*>): Boolean {
+        val isSupported = classCountMap.getOrDefault(clazz, 0) > 0
+        if (!isSupported) {
+            return classCountMap.keys
+                    .filter { it.isInstance(clazz) }
+                    .filter { !it.equals(Object::class.java) }
+                    .filter { !clazz.equals(Object::class.java) }.count() > 0
+        }
+        return isSupported
     }
 
     companion object {
