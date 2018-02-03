@@ -29,10 +29,12 @@ subprojects {
     version = "0.3.0"
 
     ext["assertjVersion"] = "3.6.2"
+    ext["gsonVersion"] = "2.8.2"
     ext["rxJavaVersion"] = "2.1.9"
     ext["rxKotlinVersion"] = "2.2.0"
     ext["jmockitVersion"] = "1.31"
     ext["junitVersion"] = "4.12"
+    ext["socketOutletVersion"] = "acd7e688d8"
 
     dependencies {
         // This I really want...

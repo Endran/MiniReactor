@@ -29,10 +29,14 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
     }
 
     fun dispatch(event: Event<*>): String {
-        if (isClassSupported(event.data!!.javaClass)) {
+        if (!isClassSupported(event.data!!.javaClass)) {
+            val data = UnsupportedData(event.data)
+            val event1 = Event(data, event.id)
+            publishProcessor.onNext(event1)
 
+        } else {
+            publishProcessor.onNext(event)
         }
-        publishProcessor.onNext(event)
         return event.id
     }
 
@@ -101,4 +105,5 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
     }
 
     data class Event<out T>(val data: T, val id: String = generateId())
+    data class UnsupportedData<T>(val data: T)
 }
