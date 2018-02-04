@@ -7,11 +7,11 @@ import org.craftsmenlabs.socketoutlet.core.initForSocketOutlet
 import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 import org.craftsmenlabs.socketoutlet.server.SocketOutletServer
 
-class MiniReactorServer(private val plantId: String,
-                        private val miniReactor: ConcreteMiniReactor = ConcreteMiniReactor(),
-                        private val outletRegistry: OutletRegistry = OutletRegistry(),
-                        private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet(),
-                        private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.DEBUG)) {
+class OutletServer(private val plantId: String,
+                   private val miniReactor: ConcreteMiniReactor = ConcreteMiniReactor(),
+                   private val outletRegistry: OutletRegistry = OutletRegistry(),
+                   private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet(),
+                   private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.DEBUG)) {
 
     var initialized = false
         private set
@@ -45,12 +45,6 @@ class MiniReactorServer(private val plantId: String,
                             return@map ServerClosed(it.plantId)
                         }
             }
-
-//            miniReactor.lurkerForSequences(ConcreteMiniReactor.UnsupportedData::class.java)
-//                    .subscribe {
-//                        val payload = ObjectMapper().writeValueAsString(it.second.data!!)
-//                        server.sendToAll(Slug(it.second.data!!::class.java.name, payload, it.first))
-//                    }
 
             server.clientConnectedCallback = {
                 if (miniReactor.isClassSupported(ServerToClientConnectionEvent::class.java)) {

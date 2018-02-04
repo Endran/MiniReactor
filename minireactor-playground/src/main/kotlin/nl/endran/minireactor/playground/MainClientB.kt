@@ -1,6 +1,10 @@
 package nl.endran.minireactor.playground
 
-import nl.endran.minireactor.plant.MiniReactorSiteNode
+import nl.endran.minireactor.plant.ClientToServerConnectionEvent
+import nl.endran.minireactor.plant.ConnectionState
+import nl.endran.minireactor.plant.MiniReactorSiteClient
+import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
+import java.util.concurrent.TimeUnit
 
 open class MainClientB {
 
@@ -8,22 +12,23 @@ open class MainClientB {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val miniReactor = MiniReactorSiteNode("theClientB")
+            val logger = CustomLogger(CustomLogger.Level.DEBUG)
+            val miniReactor = MiniReactorSiteClient("theClientB")
 
-            miniReactor.lurker(Ping::class.java)
-                    .subscribe {
-                        try {
-                            System.out.println("Received Ping $it")
-                        }catch (e:Exception) {
-                            println(e.toString())
-                        }
-                    }
+            miniReactor.reaction(Ping::class.java) {
+                it.map { logger.i { "Received Ping $it" } }
+                        .delay(1, TimeUnit.SECONDS)
+                        .map { Pong("Pong from B") }
+            }
 
-            LoggingReaction(miniReactor).start()
+            LoggingReaction(miniReactor, logger).start()
 
             miniReactor.start("127.0.0.1", 5000)
 
-            miniReactor.dispatch(Pong("Here we go"))
+            miniReactor.lurker(ClientToServerConnectionEvent::class.java)
+                    .filter { it.connectionState == ConnectionState.CONNECTED }
+                    .take(1)
+                    .subscribe { miniReactor.dispatch(Pong("Here we go")) }
 
             while (true) {
                 // Do some otherstuff it you want

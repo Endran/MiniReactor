@@ -1,6 +1,8 @@
 package nl.endran.minireactor.playground
 
-import nl.endran.minireactor.plant.MiniReactorSiteNode
+import nl.endran.minireactor.plant.MiniReactorSiteClient
+import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
+import java.util.concurrent.TimeUnit
 
 open class MainClientA {
 
@@ -8,18 +10,16 @@ open class MainClientA {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val miniReactor = MiniReactorSiteNode("theClientA")
+            val logger = CustomLogger(CustomLogger.Level.DEBUG)
+            val miniReactor = MiniReactorSiteClient("theClientA")
 
-            miniReactor.lurker(Pong::class.java)
-                    .subscribe {
-                        try {
-                            System.out.println("Received Pong $it")
-                        }catch (e:Exception) {
-                            println(e.toString())
-                        }
-                    }
+            miniReactor.reaction(Pong::class.java) {
+                it.map { logger.i { "Received Pong $it" } }
+                        .delay(1, TimeUnit.SECONDS)
+                        .map { Ping("Ping from A") }
+            }
 
-            LoggingReaction(miniReactor).start()
+            LoggingReaction(miniReactor, logger).start()
 
             miniReactor.start("127.0.0.1", 5000)
 

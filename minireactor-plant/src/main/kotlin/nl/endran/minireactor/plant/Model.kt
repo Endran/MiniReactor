@@ -3,8 +3,8 @@ package nl.endran.minireactor.plant
 import org.craftsmenlabs.socketoutlet.client.SocketOutletClient
 import org.craftsmenlabs.socketoutlet.server.SocketOutletServer
 
-data class Slug(val type: String, val payload: String, val id: String)
-data class HubSlug(val sender: String, val slug: Slug)
+data class NetworkMessage(val type: String, val payload: String, val id: String)
+data class HubMessage(val sender: String, val networkMessage: NetworkMessage)
 
 data class StartClient(val plantId: String, val ipAddress: String, val port: Int)
 data class ClientStarted(val plantId: String, val ipAddress: String, val port: Int, val client: SocketOutletClient)

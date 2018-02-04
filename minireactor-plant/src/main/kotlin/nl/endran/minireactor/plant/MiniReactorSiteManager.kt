@@ -14,8 +14,8 @@ class MiniReactorSiteManager(private val plantId: String,
                              private val outletRegistry: OutletRegistry = OutletRegistry(),
                              private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet().registerKotlinModule(),
                              private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.VERBOSE),
-                             private val miniReactorServer: MiniReactorServer = MiniReactorServer(plantId, miniReactor, outletRegistry, objectMapper, customLogger),
-                             private val miniReactorClient: MiniReactorClient = MiniReactorClient(plantId, miniReactor, outletRegistry, objectMapper, customLogger)
+                             private val outletServer: OutletServer = OutletServer(plantId, miniReactor, outletRegistry, objectMapper, customLogger),
+                             private val outletClient: OutletClient = OutletClient(plantId, miniReactor, outletRegistry, objectMapper, customLogger)
 ) : MiniReactor by miniReactor {
 
     var initialized = false
@@ -36,8 +36,8 @@ class MiniReactorSiteManager(private val plantId: String,
                 }
             })
 
-            outletRegistry.register(object : Outlet<Slug>(Slug::class.java) {
-                override fun onMessage(sender: String, message: Slug, egress: Egress) {
+            outletRegistry.register(object : Outlet<NetworkMessage>(NetworkMessage::class.java) {
+                override fun onMessage(sender: String, message: NetworkMessage, egress: Egress) {
                     val clazz = Class.forName(message.type)
                     val event = gson.fromJson(message.payload, clazz)
                     if (miniReactor.isClassSupported(clazz)) {
@@ -74,8 +74,8 @@ class MiniReactorSiteManager(private val plantId: String,
             miniReactor.lurkerForSequences(ConcreteMiniReactor.UnsupportedData::class.java)
                     .subscribe {
                         val payload = ObjectMapper().writeValueAsString(it.second.data!!)
-                        val slug = Slug(it.second.data!!::class.java.name, payload, it.first)
-                        server?.sendToAll(slug)
+                        val networkMessage = NetworkMessage(it.second.data!!::class.java.name, payload, it.first)
+                        server?.sendToAll(networkMessage)
                     }
 
             initialized = true
@@ -84,19 +84,19 @@ class MiniReactorSiteManager(private val plantId: String,
 
     fun open(port: Int) {
         lazyInit()
-        miniReactorServer.open(port)
+        outletServer.open(port)
     }
 
     fun close() {
-        miniReactorServer.close()
+        outletServer.close()
     }
 
     fun start(ipAddress: String, port: Int) {
         lazyInit()
-        miniReactorClient.start(ipAddress, port)
+        outletClient.start(ipAddress, port)
     }
 
     fun close(ipAddress: String, port: Int) {
-        miniReactorClient.close(ipAddress, port)
+        outletClient.close(ipAddress, port)
     }
 }

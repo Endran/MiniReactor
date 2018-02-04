@@ -1,6 +1,7 @@
 package nl.endran.minireactor.playground
 
 import nl.endran.minireactor.plant.MiniReactorSiteHub
+import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 
 open class MainHub {
 
@@ -10,7 +11,8 @@ open class MainHub {
 
             val miniReactor = MiniReactorSiteHub("theHub")
 
-            LoggingReaction(miniReactor).start()
+            val logger = CustomLogger(CustomLogger.Level.DEBUG)
+            LoggingReaction(miniReactor, logger).start()
 
             miniReactor.open(5000)
             while (true) {

@@ -14,12 +14,12 @@ class MiniReactorSiteHub(private val plantId: String,
                          private val outletRegistry: OutletRegistry = OutletRegistry(),
                          private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet().registerKotlinModule(),
                          private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.INFO),
-                         private val miniReactorServer: MiniReactorServer = MiniReactorServer(plantId, miniReactor, outletRegistry, objectMapper, customLogger)
+                         private val outletServer: OutletServer = OutletServer(plantId, miniReactor, outletRegistry, objectMapper, customLogger)
 ) : MiniReactor by miniReactor {
 
     var initialized = false
 
-    val clientMap = mutableMapOf<String, ((Slug) -> Unit)>()
+    val clientMap = mutableMapOf<String, ((NetworkMessage) -> Unit)>()
     var server: SocketOutletServer? = null
     val disposables = mutableListOf<Disposable>()
 
@@ -30,22 +30,20 @@ class MiniReactorSiteHub(private val plantId: String,
                 override fun onMessage(sender: String, message: ErrorMessage, egress: Egress) {
                     customLogger.e { "Received error from $sender: $message" }
                 }
-            })
+            }) // TODO: unregister
 
-            outletRegistry.register(object : Outlet<Slug>(Slug::class.java) {
-                override fun onMessage(sender: String, message: Slug, egress: Egress) {
-                    miniReactor.dispatch(HubSlug(sender, message))
+            outletRegistry.register(object : Outlet<NetworkMessage>(NetworkMessage::class.java) {
+                override fun onMessage(sender: String, message: NetworkMessage, egress: Egress) {
+                    miniReactor.dispatch(HubMessage(sender, message))
                 }
-            })
+            }) // TODO: unregister
 
-            miniReactor.lurker(HubSlug::class.java)
-                    .subscribe { xxx ->
-                        val sender = xxx.sender
-                        val message = xxx.slug
+            miniReactor.lurker(HubMessage::class.java)
+                    .subscribe { message ->
                         clientMap.entries
-                                .filter { it.key != sender }
-                                .forEach { it.value.invoke(message) }
-                    }
+                                .filter { it.key != message.sender }
+                                .forEach { it.value.invoke(message.networkMessage) }
+                    }.let { disposables.add(it) }
 
             miniReactor.lurker(ServerOpened::class.java)
                     .subscribe {
@@ -70,8 +68,8 @@ class MiniReactorSiteHub(private val plantId: String,
             miniReactor.lurkerForSequences(ConcreteMiniReactor.UnsupportedData::class.java)
                     .subscribe {
                         val payload = ObjectMapper().writeValueAsString(it.second.data!!)
-                        val slug = Slug(it.second.data!!::class.java.name, payload, it.first)
-                        server?.sendToAll(slug)
+                        val networkMessage = NetworkMessage(it.second.data!!::class.java.name, payload, it.first)
+                        server?.sendToAll(networkMessage)
                     }.let { disposables.add(it) }
 
             initialized = true
@@ -80,13 +78,13 @@ class MiniReactorSiteHub(private val plantId: String,
 
     fun open(port: Int) {
         lazyInit()
-        miniReactorServer.open(port)
+        outletServer.open(port)
     }
 
     fun close() {
         disposables.forEach { it.dispose() }
         clientMap.clear()
-        miniReactorServer.close()
+        outletServer.close()
         server = null
     }
 }

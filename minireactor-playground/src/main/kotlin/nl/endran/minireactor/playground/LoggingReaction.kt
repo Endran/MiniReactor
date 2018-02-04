@@ -1,13 +1,14 @@
 package nl.endran.minireactor.playground
 
 import nl.endran.minireactor.core.MiniReactor
+import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 
-class LoggingReaction(val miniReactor: MiniReactor) {
+class LoggingReaction(val miniReactor: MiniReactor, val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.INFO)) {
 
     fun start() {
         miniReactor.lurkerForSequences(Object::class.java)
                 .subscribe {
-                    System.out.println("Reactor: ${getId(it.first)} ${it.second}")
+                    customLogger.d { "Reactor: ${getId(it.first)} ${it.second}" }
                 }
     }
 
