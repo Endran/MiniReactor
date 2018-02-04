@@ -2,7 +2,7 @@ package nl.endran.minireactor.playground
 
 import nl.endran.minireactor.plant.ClientToServerConnectionEvent
 import nl.endran.minireactor.plant.ConnectionState
-import nl.endran.minireactor.plant.MiniReactorSiteClient
+import nl.endran.minireactor.plant.ConnectedMiniReactor
 import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 import java.util.concurrent.TimeUnit
 
@@ -13,7 +13,7 @@ open class MainClientB {
         fun main(args: Array<String>) {
 
             val logger = CustomLogger(CustomLogger.Level.DEBUG)
-            val miniReactor = MiniReactorSiteClient("theClientB")
+            val miniReactor = ConnectedMiniReactor("theClientB")
 
             miniReactor.reaction(Ping::class.java) {
                 it.map { logger.i { "Received Ping $it" } }

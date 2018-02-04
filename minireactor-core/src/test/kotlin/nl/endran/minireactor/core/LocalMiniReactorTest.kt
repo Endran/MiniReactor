@@ -7,9 +7,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class ConcreteMiniReactorTest {
+class LocalMiniReactorTest {
 
-    private lateinit var reactor: ConcreteMiniReactor
+    private lateinit var reactor: LocalMiniReactor
     private lateinit var testScheduler: TestScheduler
 
     private val testSubscriber1 = TestSubscriber<ExampleEvent1>()
@@ -19,7 +19,7 @@ class ConcreteMiniReactorTest {
     fun setUp() {
         testScheduler = TestScheduler()
         testScheduler.start()
-        reactor = ConcreteMiniReactor(testScheduler)
+        reactor = LocalMiniReactor(testScheduler)
     }
 
     @After

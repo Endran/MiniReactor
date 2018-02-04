@@ -1,23 +1,22 @@
 package nl.endran.minireactor.plant
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import nl.endran.minireactor.core.ConcreteMiniReactor
+import nl.endran.minireactor.core.LocalMiniReactor
 import org.craftsmenlabs.socketoutlet.client.SocketOutletClient
 import org.craftsmenlabs.socketoutlet.core.OutletRegistry
 import org.craftsmenlabs.socketoutlet.core.initForSocketOutlet
 import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 
 class OutletClient(private val plantId: String,
-                   private val miniReactor: ConcreteMiniReactor,
+                   private val miniReactor: LocalMiniReactor,
                    private val outletRegistry: OutletRegistry,
                    private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet(),
                    private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.DEBUG)) {
 
-    var initialized = false
+    private var initialized = false
+    private val clientMap = mutableMapOf<String, SocketOutletClient>()
 
-    val clientMap = mutableMapOf<String, SocketOutletClient>()
-
-    fun lazyInit() {
+    private fun lazyInit() {
         if (!initialized) {
 
             miniReactor.reaction(StartClient::class.java) {
@@ -72,7 +71,7 @@ class OutletClient(private val plantId: String,
         miniReactor.dispatch(StartClient(plantId, ipAddress, port))
     }
 
-    fun close(ipAddress: String, port: Int) {
+    fun stop(ipAddress: String, port: Int) {
         miniReactor.dispatch(StopClient(plantId, ipAddress, port))
     }
 }

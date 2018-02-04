@@ -5,9 +5,9 @@ import io.reactivex.disposables.Disposable
 
 
 /**
- * A very lightweight and thread-safe implementation of the Reactor Pattern, with RxJava2. ConcreteMiniReactor takes in data,
+ * A very lightweight and thread-safe implementation of the Reactor Pattern, with RxJava2. MiniReactor takes in data,
  * from any thread, and demultiplexes them into a single thread. Interested classes can register to
- * ConcreteMiniReactor to obtain this data, on the Reactor thread. Classes should never block the Reactor thread.
+ * MiniReactor to obtain this data, on the Reactor thread. Classes should never block the Reactor thread.
  */
 interface MiniReactor {
 

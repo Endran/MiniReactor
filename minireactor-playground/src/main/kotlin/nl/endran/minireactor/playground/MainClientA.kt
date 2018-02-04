@@ -1,6 +1,6 @@
 package nl.endran.minireactor.playground
 
-import nl.endran.minireactor.plant.MiniReactorSiteClient
+import nl.endran.minireactor.plant.ConnectedMiniReactor
 import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 import java.util.concurrent.TimeUnit
 
@@ -11,7 +11,7 @@ open class MainClientA {
         fun main(args: Array<String>) {
 
             val logger = CustomLogger(CustomLogger.Level.DEBUG)
-            val miniReactor = MiniReactorSiteClient("theClientA")
+            val miniReactor = ConnectedMiniReactor("theClientA")
 
             miniReactor.reaction(Pong::class.java) {
                 it.map { logger.i { "Received Pong $it" } }

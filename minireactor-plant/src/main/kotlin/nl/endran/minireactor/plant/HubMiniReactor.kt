@@ -3,27 +3,26 @@ package nl.endran.minireactor.plant
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.reactivex.disposables.Disposable
-import nl.endran.minireactor.core.ConcreteMiniReactor
+import nl.endran.minireactor.core.LocalMiniReactor
 import nl.endran.minireactor.core.MiniReactor
 import org.craftsmenlabs.socketoutlet.core.*
 import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 import org.craftsmenlabs.socketoutlet.server.SocketOutletServer
 
-class MiniReactorSiteHub(private val plantId: String,
-                         private val miniReactor: ConcreteMiniReactor = ConcreteMiniReactor(),
-                         private val outletRegistry: OutletRegistry = OutletRegistry(),
-                         private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet().registerKotlinModule(),
-                         private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.INFO),
-                         private val outletServer: OutletServer = OutletServer(plantId, miniReactor, outletRegistry, objectMapper, customLogger)
+class HubMiniReactor(private val plantId: String,
+                     private val miniReactor: LocalMiniReactor = LocalMiniReactor(),
+                     private val outletRegistry: OutletRegistry = OutletRegistry(),
+                     private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet().registerKotlinModule(),
+                     private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.INFO),
+                     private val outletServer: OutletServer = OutletServer(plantId, miniReactor, outletRegistry, objectMapper, customLogger)
 ) : MiniReactor by miniReactor {
 
-    var initialized = false
+    private var initialized = false
+    private val clientMap = mutableMapOf<String, ((NetworkMessage) -> Unit)>()
+    private var server: SocketOutletServer? = null
+    private val disposables = mutableListOf<Disposable>()
 
-    val clientMap = mutableMapOf<String, ((NetworkMessage) -> Unit)>()
-    var server: SocketOutletServer? = null
-    val disposables = mutableListOf<Disposable>()
-
-    fun lazyInit() {
+    private fun lazyInit() {
         if (!initialized) {
 
             outletRegistry.register(object : Outlet<ErrorMessage>(ErrorMessage::class.java) {
@@ -65,7 +64,7 @@ class MiniReactorSiteHub(private val plantId: String,
                         }
                     }.let { disposables.add(it) }
 
-            miniReactor.lurkerForSequences(ConcreteMiniReactor.UnsupportedData::class.java)
+            miniReactor.lurkerForSequences(LocalMiniReactor.UnsupportedData::class.java)
                     .subscribe {
                         val payload = ObjectMapper().writeValueAsString(it.second.data!!)
                         val networkMessage = NetworkMessage(it.second.data!!::class.java.name, payload, it.first)

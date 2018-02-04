@@ -1,14 +1,14 @@
 package nl.endran.minireactor.plant
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import nl.endran.minireactor.core.ConcreteMiniReactor
+import nl.endran.minireactor.core.LocalMiniReactor
 import org.craftsmenlabs.socketoutlet.core.OutletRegistry
 import org.craftsmenlabs.socketoutlet.core.initForSocketOutlet
 import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 import org.craftsmenlabs.socketoutlet.server.SocketOutletServer
 
 class OutletServer(private val plantId: String,
-                   private val miniReactor: ConcreteMiniReactor = ConcreteMiniReactor(),
+                   private val miniReactor: LocalMiniReactor = LocalMiniReactor(),
                    private val outletRegistry: OutletRegistry = OutletRegistry(),
                    private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet(),
                    private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.DEBUG)) {

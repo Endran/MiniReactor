@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  * @param reactorScheduler
  *          The Reactor Scheduler, will default to a [Scheduler] from [Executors.newSingleThreadExecutor()]
  */
-class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaultReactorScheduler()) : MiniReactor {
+class LocalMiniReactor(private val reactorScheduler: Scheduler = createDefaultReactorScheduler()) : MiniReactor {
 
     private val publishProcessor = PublishProcessor.create<Event<*>>()
     private val reactor = publishProcessor.onBackpressureBuffer();
