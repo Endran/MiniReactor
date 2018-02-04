@@ -2,13 +2,13 @@ package nl.endran.minireactor.playground
 
 import nl.endran.minireactor.plant.MiniReactorSiteNode
 
-open class MainClient {
+open class MainClientA {
 
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val miniReactor = MiniReactorSiteNode("theClient")
+            val miniReactor = MiniReactorSiteNode("theClientA")
 
             miniReactor.lurker(Pong::class.java)
                     .subscribe {
@@ -21,7 +21,7 @@ open class MainClient {
 
             LoggingReaction(miniReactor).start()
 
-            miniReactor.start("127.0.0.1", 5001)
+            miniReactor.start("127.0.0.1", 5000)
 
             miniReactor.dispatch(Ping("Here we go"))
 

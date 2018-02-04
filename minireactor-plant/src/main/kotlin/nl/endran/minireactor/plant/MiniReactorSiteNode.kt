@@ -30,13 +30,13 @@ class MiniReactorSiteNode(private val plantId: String,
         if (!initialized) {
 
             outletRegistry.register(object : Outlet<ErrorMessage>(ErrorMessage::class.java) {
-                override fun onMessage(message: ErrorMessage, egress: Egress) {
+                override fun onMessage(sender: String, message: ErrorMessage, egress: Egress) {
                     customLogger.e { message.toString() }
                 }
             })
 
             outletRegistry.register(object : Outlet<Slug>(Slug::class.java) {
-                override fun onMessage(message: Slug, egress: Egress) {
+                override fun onMessage(sender: String, message: Slug, egress: Egress) {
                     val clazz = Class.forName(message.type)
                     val event = gson.fromJson(message.payload, clazz)
                     if (miniReactor.isClassSupported(clazz)) {

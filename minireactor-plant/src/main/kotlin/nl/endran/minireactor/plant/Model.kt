@@ -4,6 +4,7 @@ import org.craftsmenlabs.socketoutlet.client.SocketOutletClient
 import org.craftsmenlabs.socketoutlet.server.SocketOutletServer
 
 data class Slug(val type: String, val payload: String, val id: String)
+data class HubSlug(val sender: String, val slug: Slug)
 
 data class StartClient(val plantId: String, val ipAddress: String, val port: Int)
 data class ClientStarted(val plantId: String, val ipAddress: String, val port: Int, val client: SocketOutletClient)
