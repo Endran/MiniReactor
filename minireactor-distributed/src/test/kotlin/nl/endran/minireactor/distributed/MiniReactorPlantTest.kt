@@ -1,4 +1,4 @@
-package nl.endran.minireactor.plant
+package nl.endran.minireactor.distributed
 
 import org.junit.Test
 

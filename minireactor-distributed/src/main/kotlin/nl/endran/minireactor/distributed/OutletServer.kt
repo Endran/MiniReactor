@@ -1,4 +1,4 @@
-package nl.endran.minireactor.plant
+package nl.endran.minireactor.distributed
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import nl.endran.minireactor.core.LocalMiniReactor

@@ -1,6 +1,6 @@
 package nl.endran.minireactor.playground
 
-import nl.endran.minireactor.plant.HubMiniReactor
+import nl.endran.minireactor.distributed.HubMiniReactor
 import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 
 open class MainHub {

@@ -1,4 +1,4 @@
-package nl.endran.minireactor.plant
+package nl.endran.minireactor.distributed
 
 import org.craftsmenlabs.socketoutlet.client.SocketOutletClient
 import org.craftsmenlabs.socketoutlet.server.SocketOutletServer

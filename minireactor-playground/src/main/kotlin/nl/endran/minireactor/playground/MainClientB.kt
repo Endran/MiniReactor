@@ -1,8 +1,8 @@
 package nl.endran.minireactor.playground
 
-import nl.endran.minireactor.plant.ClientToServerConnectionEvent
-import nl.endran.minireactor.plant.ConnectionState
-import nl.endran.minireactor.plant.ConnectedMiniReactor
+import nl.endran.minireactor.distributed.ClientToServerConnectionEvent
+import nl.endran.minireactor.distributed.ConnectionState
+import nl.endran.minireactor.distributed.ConnectedMiniReactor
 import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 import java.util.concurrent.TimeUnit
 
