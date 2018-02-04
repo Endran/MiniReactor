@@ -14,7 +14,9 @@ class MiniReactorServer(private val plantId: String,
                         private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.DEBUG)) {
 
     var initialized = false
+        private set
     var socketOutletServer: SocketOutletServer? = null
+        private set
 
     private fun lazyInit() {
         if (!initialized) {
@@ -29,7 +31,7 @@ class MiniReactorServer(private val plantId: String,
                             if (!server.running) {
                                 server.open(it.port)
                             }
-                            return@map ServerOpened(it.plantId, it.port)
+                            return@map ServerOpened(it.plantId, server)
                         }
             }
 
@@ -44,21 +46,21 @@ class MiniReactorServer(private val plantId: String,
                         }
             }
 
-            miniReactor.lurkerForSequences(ConcreteMiniReactor.UnsupportedData::class.java)
-                    .subscribe {
-                        val payload = ObjectMapper().writeValueAsString(it.second.data!!)
-                        server.sendToAll(Slug(it.second.data!!::class.java.name, payload, it.first))
-                    }
+//            miniReactor.lurkerForSequences(ConcreteMiniReactor.UnsupportedData::class.java)
+//                    .subscribe {
+//                        val payload = ObjectMapper().writeValueAsString(it.second.data!!)
+//                        server.sendToAll(Slug(it.second.data!!::class.java.name, payload, it.first))
+//                    }
 
             server.clientConnectedCallback = {
-                if (miniReactor.isClassSupported(ClientConnectionState::class.java)) {
-                    miniReactor.dispatch(ClientConnectionState(it, ConnectionState.CONNECTED))
+                if (miniReactor.isClassSupported(ServerToClientConnectionEvent::class.java)) {
+                    miniReactor.dispatch(ServerToClientConnectionEvent(it, ConnectionState.CONNECTED))
                 }
             }
 
             server.clientDisconnectedCallback = {
-                if (miniReactor.isClassSupported(ClientConnectionState::class.java)) {
-                    miniReactor.dispatch(ClientConnectionState(it, ConnectionState.DISCONNECTED))
+                if (miniReactor.isClassSupported(ServerToClientConnectionEvent::class.java)) {
+                    miniReactor.dispatch(ServerToClientConnectionEvent(it, ConnectionState.DISCONNECTED))
                 }
             }
         }

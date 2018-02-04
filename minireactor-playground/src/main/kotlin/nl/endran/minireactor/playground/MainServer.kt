@@ -1,6 +1,6 @@
 package nl.endran.minireactor.playground
 
-import nl.endran.minireactor.plant.MiniReactorNetwork
+import nl.endran.minireactor.plant.MiniReactorSiteManager
 
 open class MainServer {
 
@@ -8,7 +8,7 @@ open class MainServer {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val miniReactor = MiniReactorNetwork("theServer")
+            val miniReactor = MiniReactorSiteManager("theServer")
 
             miniReactor.reaction(Ping::class.java) {
                 it.map { Pong("Replying to ${it.message}") }

@@ -1,6 +1,6 @@
 package nl.endran.minireactor.playground
 
-import nl.endran.minireactor.plant.MiniReactorNetwork
+import nl.endran.minireactor.plant.MiniReactorSiteNode
 
 open class MainClient {
 
@@ -8,7 +8,7 @@ open class MainClient {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val miniReactor = MiniReactorNetwork("theClient")
+            val miniReactor = MiniReactorSiteNode("theClient")
 
             miniReactor.lurker(Pong::class.java)
                     .subscribe {
@@ -29,7 +29,6 @@ open class MainClient {
                 // Do some otherstuff it you want
                 Thread.sleep(1000)
             }
-            miniReactor.close()
         }
     }
 }

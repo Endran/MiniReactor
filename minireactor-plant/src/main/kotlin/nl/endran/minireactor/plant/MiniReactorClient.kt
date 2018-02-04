@@ -27,7 +27,7 @@ class MiniReactorClient(private val plantId: String,
                             if (!client.isRunning()) {
                                 client.start(it.ipAddress, it.port)
                             }
-                            return@map ClientStarted(it.plantId, it.ipAddress, it.port)
+                            return@map ClientStarted(it.plantId, it.ipAddress, it.port, client)
                         }
             }
 
@@ -43,12 +43,12 @@ class MiniReactorClient(private val plantId: String,
                         }
             }
 
-            miniReactor.lurkerForSequences(ConcreteMiniReactor.UnsupportedData::class.java)
-                    .subscribe {
-                        val payload = ObjectMapper().writeValueAsString(it.second.data!!)
-                        val slug = Slug(it.second.data!!::class.java.name, payload, it.first)
-                        clientMap.values.forEach { it.send(slug) }
-                    }
+//            miniReactor.lurkerForSequences(ConcreteMiniReactor.UnsupportedData::class.java)
+//                    .subscribe {
+//                        val payload = ObjectMapper().writeValueAsString(it.second.data!!)
+//                        val slug = Slug(it.second.data!!::class.java.name, payload, it.first)
+//                        clientMap.values.forEach { it.send(slug) }
+//                    }
 
             initialized = true
         }
@@ -59,14 +59,14 @@ class MiniReactorClient(private val plantId: String,
             val client = SocketOutletClient(plantId, outletRegistry, objectMapper, customLogger)
 
             client.serverConnectedCallback = {
-                if (miniReactor.isClassSupported(ServerConnectionState::class.java)) {
-                    miniReactor.dispatch(ServerConnectionState(ConnectionState.CONNECTED))
+                if (miniReactor.isClassSupported(ClientToServerConnectionEvent::class.java)) {
+                    miniReactor.dispatch(ClientToServerConnectionEvent(ipAddress, port, client, ConnectionState.CONNECTED))
                 }
             }
 
             client.serverDisconnectedCallback = {
-                if (miniReactor.isClassSupported(ServerConnectionState::class.java)) {
-                    miniReactor.dispatch(ServerConnectionState(ConnectionState.DISCONNECTED))
+                if (miniReactor.isClassSupported(ClientToServerConnectionEvent::class.java)) {
+                    miniReactor.dispatch(ClientToServerConnectionEvent(ipAddress, port, client, ConnectionState.DISCONNECTED))
                 }
             }
             return@getOrPut client

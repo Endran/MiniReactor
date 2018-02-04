@@ -34,7 +34,7 @@ subprojects {
     ext["rxKotlinVersion"] = "2.2.0"
     ext["jmockitVersion"] = "1.31"
     ext["junitVersion"] = "4.12"
-    ext["socketOutletVersion"] = "acd7e688d8"
+    ext["socketOutletVersion"] = "aec78e4456"
 
     dependencies {
         // This I really want...
