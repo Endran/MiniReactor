@@ -1,7 +1,8 @@
 package nl.endran.minireactor.playground
 
 import nl.endran.minireactor.distributed.ConnectedMiniReactor
-import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
+import nl.endran.minireactor.util.LoggingReaction
+import nl.endran.minireactor.util.MiniLogger
 import java.util.concurrent.TimeUnit
 
 open class MainClientA {
@@ -10,7 +11,7 @@ open class MainClientA {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val logger = CustomLogger(CustomLogger.Level.DEBUG)
+            val logger = MiniLogger(MiniLogger.Level.DEBUG)
             val miniReactor = ConnectedMiniReactor("theClientA")
 
             miniReactor.reaction(Pong::class.java) {
@@ -18,6 +19,8 @@ open class MainClientA {
                         .delay(1, TimeUnit.SECONDS)
                         .map { Ping("Ping from A") }
             }
+
+            logger.w(RuntimeException("test")) { "Just a test" }
 
             LoggingReaction(miniReactor, logger).start()
 

@@ -1,9 +1,10 @@
 package nl.endran.minireactor.playground
 
 import nl.endran.minireactor.distributed.ClientToServerConnectionEvent
-import nl.endran.minireactor.distributed.ConnectionState
 import nl.endran.minireactor.distributed.ConnectedMiniReactor
-import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
+import nl.endran.minireactor.distributed.ConnectionState
+import nl.endran.minireactor.util.LoggingReaction
+import nl.endran.minireactor.util.MiniLogger
 import java.util.concurrent.TimeUnit
 
 open class MainClientB {
@@ -12,7 +13,7 @@ open class MainClientB {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val logger = CustomLogger(CustomLogger.Level.DEBUG)
+            val logger = MiniLogger(MiniLogger.Level.DEBUG)
             val miniReactor = ConnectedMiniReactor("theClientB")
 
             miniReactor.reaction(Ping::class.java) {
