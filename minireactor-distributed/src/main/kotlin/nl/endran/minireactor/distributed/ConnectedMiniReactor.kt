@@ -6,16 +6,16 @@ import com.google.gson.Gson
 import io.reactivex.disposables.Disposable
 import nl.endran.minireactor.core.LocalMiniReactor
 import nl.endran.minireactor.core.MiniReactor
+import nl.endran.minireactor.util.MiniLogger
 import org.craftsmenlabs.socketoutlet.client.SocketOutletClient
 import org.craftsmenlabs.socketoutlet.core.*
-import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 
 class ConnectedMiniReactor(private val plantId: String,
                            private val miniReactor: LocalMiniReactor = LocalMiniReactor(),
                            private val outletRegistry: OutletRegistry = OutletRegistry(),
                            private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet().registerKotlinModule(),
-                           private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.INFO),
-                           private val outletClient: OutletClient = OutletClient(plantId, miniReactor, outletRegistry, objectMapper, customLogger)
+                           private val logger: MiniLogger = MiniLogger(MiniLogger.Level.INFO),
+                           private val outletClient: OutletClient = OutletClient(plantId, miniReactor, outletRegistry, objectMapper, logger)
 ) : MiniReactor by miniReactor {
 
     private var initialized = false
@@ -28,7 +28,7 @@ class ConnectedMiniReactor(private val plantId: String,
 
             outletRegistry.register(object : Outlet<ErrorMessage>(ErrorMessage::class.java) {
                 override fun onMessage(sender: String, message: ErrorMessage, egress: Egress) {
-                    customLogger.e { message.toString() }
+                    logger.e { message.toString() }
                 }
             }) // TODO: unregister
 
@@ -80,8 +80,9 @@ class ConnectedMiniReactor(private val plantId: String,
     }
 
     fun stop(ipAddress: String, port: Int) {
-        disposables.forEach { it.dispose() }
-        clientMap.values.forEach { it.stop() }
-        clientMap.clear()
+        TODO("First we need to be able to unregister outlets")
+//        disposables.forEach { it.dispose() }
+//        clientMap.values.forEach { it.stop() }
+//        clientMap.clear()
     }
 }

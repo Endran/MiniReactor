@@ -28,12 +28,6 @@ apply {
 
 dependencies {
     compile(project(":minireactor-core"))
-    compile(project(":minireactor-util"))
-
-    compile("com.github.endran.SocketOutlet:client:${ext["socketOutletVersion"]}")
-    compile("com.github.endran.SocketOutlet:server:${ext["socketOutletVersion"]}")
-
-    compile("com.google.code.gson:gson:${ext["gsonVersion"]}")
 
     testCompile("org.assertj:assertj-core:${ext["assertjVersion"]}")
     testCompile("org.jmockit:jmockit:${ext["jmockitVersion"]}")

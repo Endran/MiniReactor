@@ -2,16 +2,16 @@ package nl.endran.minireactor.distributed
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import nl.endran.minireactor.core.LocalMiniReactor
+import nl.endran.minireactor.util.MiniLogger
 import org.craftsmenlabs.socketoutlet.core.OutletRegistry
 import org.craftsmenlabs.socketoutlet.core.initForSocketOutlet
-import org.craftsmenlabs.socketoutlet.core.log.CustomLogger
 import org.craftsmenlabs.socketoutlet.server.SocketOutletServer
 
 class OutletServer(private val plantId: String,
                    private val miniReactor: LocalMiniReactor = LocalMiniReactor(),
                    private val outletRegistry: OutletRegistry = OutletRegistry(),
                    private val objectMapper: ObjectMapper = ObjectMapper().initForSocketOutlet(),
-                   private val customLogger: CustomLogger = CustomLogger(CustomLogger.Level.DEBUG)) {
+                   private val logger: MiniLogger = MiniLogger(MiniLogger.Level.DEBUG)) {
 
     var initialized = false
         private set
@@ -21,7 +21,7 @@ class OutletServer(private val plantId: String,
     private fun lazyInit() {
         if (!initialized) {
 
-            val server = SocketOutletServer(outletRegistry, objectMapper, customLogger)
+            val server = SocketOutletServer(outletRegistry, objectMapper, MiniLoggerCustom(logger))
             socketOutletServer = server
 
             miniReactor.reaction(OpenServer::class.java) {

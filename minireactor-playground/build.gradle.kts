@@ -14,7 +14,8 @@ application {
 
 dependencies {
     compile(kotlin("stdlib"))
-    compile(project(":minireactor-plant"))
+    compile(project(":minireactor-distributed"))
+    compile(project(":minireactor-util"))
 
     testCompile("org.assertj:assertj-core:${ext["assertjVersion"]}")
     testCompile("org.jmockit:jmockit:${ext["jmockitVersion"]}")
