@@ -50,7 +50,6 @@ application {
     mainClassName = mainClass
 }
 
-
 tasks.withType<Jar> {
     manifest {
         attributes(mapOf(Pair("Main-Class", mainClass)))
@@ -67,29 +66,31 @@ tasks.withType<DockerTask> {
 }
 
 task("buildDocker", DockerTask::class) {
+    val shadowJar = tasks["shadowJar"] as ShadowJar
+    dependsOn(shadowJar)
+
     push = false
     project.group = ext["dockerGroup"] as String
     applicationName = appName.toLowerCase()
-    val shadowJar = tasks["shadowJar"] as ShadowJar
     addFile(shadowJar.archivePath.absolutePath)
     runCommand("sh -c 'touch /${shadowJar.archiveName}'")
     entryPoint(listOf("sh", "-c", "java -jar ${shadowJar.archiveName}"))
 
     doFirst {
         copy {
-            from(jar)
+            from(tasks["jar"] as Jar)
             into(stageDir)
         }
     }
 }
 
-task("stoptDocker", Exec::class) {
+task("stopDocker", Exec::class) {
     workingDir = File("../scripts")
     commandLine = listOf("./stop_docker.sh", appName.toLowerCase())
 }
 
 task("startDocker", Exec::class) {
-    dependsOn.add(tasks["shadowJar"])
+    dependsOn.add(tasks["stopDocker"])
 
     workingDir = File("../scripts")
     commandLine = listOf("./start_docker.sh", (ext["dockerGroup"] as String).toLowerCase(), appName.toLowerCase(), ext["projectVersion"] as String)
@@ -101,8 +102,5 @@ task("pushDocker", Exec::class) {
 }
 
 val build: DefaultTask by tasks
-val jar = tasks["jar"] as Jar
 val shadowJar = tasks["shadowJar"] as ShadowJar
-val buildDocker = tasks["buildDocker"] as DockerTask
-buildDocker.dependsOn(shadowJar)
 build.dependsOn(shadowJar)
