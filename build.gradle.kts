@@ -5,9 +5,27 @@ import org.jetbrains.kotlin.daemon.client.KotlinCompilerClient.compile
 import org.jetbrains.kotlin.load.kotlin.isContainedByCompiledPartOfOurModule
 import java.net.URI
 
+buildscript {
+
+    val gradleVersionsVersion = "0.17.0"
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath("com.github.ben-manes:gradle-versions-plugin:$gradleVersionsVersion")
+    }
+}
+
+apply {
+    plugin("com.github.ben-manes.versions")
+}
+
 plugins {
     base
-    kotlin("jvm") version "1.1.51" apply false
+    idea
+    kotlin("jvm") version "1.2.21" apply false
 }
 
 repositories {
@@ -22,17 +40,17 @@ subprojects {
     }
 
     plugins {
-        kotlin("jvm") version "1.1.51" apply false
+        kotlin("jvm") version "1.2.21" apply false
     }
 
     group = "com.github.Endran"
     version = "0.3.0"
 
-    ext["assertjVersion"] = "3.6.2"
+    ext["assertjVersion"] = "3.9.0"
     ext["gsonVersion"] = "2.8.2"
     ext["rxJavaVersion"] = "2.1.9"
     ext["rxKotlinVersion"] = "2.2.0"
-    ext["jmockitVersion"] = "1.31"
+    ext["jmockitVersion"] = "1.38"
     ext["junitVersion"] = "4.12"
     ext["socketOutletVersion"] = "aec78e4456"
 
