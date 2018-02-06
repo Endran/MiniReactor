@@ -78,13 +78,6 @@ subprojects {
     dependencies {
         // This I really want
     }
-
-//    configure<IdeaModel> {
-//        module {
-//            inheritOutputDirs = false
-//            outputDir = file("$buildDir/classes/main/")
-//        }
-//    }
 }
 
 dependencies {
