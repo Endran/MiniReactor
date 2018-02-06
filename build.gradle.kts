@@ -1,9 +1,12 @@
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.repositories
+import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
+import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.daemon.client.KotlinCompilerClient.compile
 import org.jetbrains.kotlin.load.kotlin.isContainedByCompiledPartOfOurModule
 import java.net.URI
+import org.gradle.plugins.ide.idea.model.IdeaModule
 
 buildscript {
 
@@ -32,6 +35,18 @@ repositories {
     jcenter()
 }
 
+configure<IdeaModel> {
+    project {
+        languageLevel = IdeaLanguageLevel(JavaVersion.VERSION_1_8)
+    }
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+        inheritOutputDirs = false
+        outputDir = file("$buildDir/classes/main/")
+    }
+}
+
 subprojects {
 
     repositories {
@@ -45,6 +60,11 @@ subprojects {
 
     group = "com.github.Endran"
     version = "0.3.0"
+    ext["projectVersion"] = version
+
+    ext["dockerGroup"] = "registry.gitlab.com/endran/playground"
+    ext["dockerMaintainer"] = "David Hardy <davidhardy85@gmail.events>"
+    ext["dockerBaseImage"] = "frolvlad/alpine-oraclejdk8:slim"
 
     ext["assertjVersion"] = "3.9.0"
     ext["gsonVersion"] = "2.8.2"
@@ -54,14 +74,20 @@ subprojects {
     ext["junitVersion"] = "4.12"
     ext["socketOutletVersion"] = "aec78e4456"
 
+
     dependencies {
-        // This I really want...
-        // ... and version updates
+        // This I really want
     }
+
+//    configure<IdeaModel> {
+//        module {
+//            inheritOutputDirs = false
+//            outputDir = file("$buildDir/classes/main/")
+//        }
+//    }
 }
 
 dependencies {
-    // Make the root project archives configuration depend on every subproject
     subprojects.forEach {
         archives(it)
     }
