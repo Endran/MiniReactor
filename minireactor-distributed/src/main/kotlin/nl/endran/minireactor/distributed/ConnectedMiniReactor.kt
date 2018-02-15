@@ -80,9 +80,15 @@ class ConnectedMiniReactor(private val plantId: String,
     }
 
     fun stop(ipAddress: String, port: Int) {
-        TODO("First we need to be able to unregister outlets")
-//        disposables.forEach { it.dispose() }
-//        clientMap.values.forEach { it.stop() }
-//        clientMap.clear()
+        outletRegistry.getOutlet(NetworkMessage::class.java.name)?.let {
+            outletRegistry.unregister(it)
+        }
+        outletRegistry.getOutlet(ErrorMessage::class.java.name)?.let {
+            outletRegistry.unregister(it)
+        }
+
+        disposables.forEach { it.dispose() }
+        clientMap.values.forEach { it.stop() }
+        clientMap.clear()
     }
 }
