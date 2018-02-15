@@ -11,6 +11,7 @@ import org.gradle.plugins.ide.idea.model.IdeaModule
 buildscript {
 
     val gradleVersionsVersion = "0.17.0"
+    val kotlinVersion = "1.2.21"
 
     repositories {
         jcenter()
@@ -18,6 +19,7 @@ buildscript {
 
     dependencies {
         classpath("com.github.ben-manes:gradle-versions-plugin:$gradleVersionsVersion")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     }
 }
 
@@ -28,7 +30,7 @@ apply {
 plugins {
     base
     idea
-    kotlin("jvm") version "1.2.21" apply false
+    java
 }
 
 repositories {
@@ -47,18 +49,7 @@ configure<IdeaModel> {
     }
 }
 
-subprojects {
-
-    repositories {
-        jcenter()
-        maven { setUrl("https://jitpack.io") }
-    }
-
-    plugins {
-        kotlin("jvm") version "1.2.21" apply false
-    }
-
-    group = "com.github.Endran"
+allprojects {group = "com.github.Endran"
     version = "0.3.0"
     ext["projectVersion"] = version
 
@@ -72,11 +63,28 @@ subprojects {
     ext["rxKotlinVersion"] = "2.2.0"
     ext["jmockitVersion"] = "1.38"
     ext["junitVersion"] = "4.12"
-    ext["socketOutletVersion"] = "aec78e4456"
+    ext["socketOutletVersion"] = "2ef0b591a3"
+}
 
+subprojects {
+
+    apply {
+        plugin("kotlin")
+    }
+
+    repositories {
+        jcenter()
+        maven { setUrl("https://jitpack.io") }
+    }
+
+    plugins {
+        kotlin("jvm") version ext["kotlinVersion"] as String apply false
+    }
 
     dependencies {
-        // This I really want
+        testCompile("org.assertj:assertj-core:${ext["assertjVersion"]}")
+        testCompile("org.jmockit:jmockit:${ext["jmockitVersion"]}")
+        testCompile("junit:junit:${ext["junitVersion"]}")
     }
 }
 

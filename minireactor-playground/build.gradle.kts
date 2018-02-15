@@ -37,10 +37,6 @@ dependencies {
     compile(kotlin("stdlib"))
     compile(project(":minireactor-distributed"))
     compile(project(":minireactor-util"))
-
-    testCompile("org.assertj:assertj-core:${ext["assertjVersion"]}")
-    testCompile("org.jmockit:jmockit:${ext["jmockitVersion"]}")
-    testCompile("junit:junit:${ext["junitVersion"]}")
 }
 
 val mainClass = "nl.endran.minireactor.playground.MainHub"

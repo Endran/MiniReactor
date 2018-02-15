@@ -28,10 +28,6 @@ apply {
 
 dependencies {
     compile(project(":minireactor-core"))
-
-    testCompile("org.assertj:assertj-core:${ext["assertjVersion"]}")
-    testCompile("org.jmockit:jmockit:${ext["jmockitVersion"]}")
-    testCompile("junit:junit:${ext["junitVersion"]}")
 }
 
 val dokkaJar = task<Jar>("dokkaJar") {
