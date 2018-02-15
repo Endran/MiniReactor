@@ -16,7 +16,7 @@ class MiniLogger(val level: Level, val logTag: String = "") {
         v(null, message)
     }
 
-    fun v(ex: Exception?, message: () -> String) {
+    fun v(ex: Throwable?, message: () -> String) {
         if (Level.VERBOSE.ordinal >= level.ordinal) {
             log("VERBOSE", message, ex)
         }
@@ -26,7 +26,7 @@ class MiniLogger(val level: Level, val logTag: String = "") {
         d(null, message)
     }
 
-    fun d(ex: Exception?, message: () -> String) {
+    fun d(ex: Throwable?, message: () -> String) {
         if (Level.DEBUG.ordinal >= level.ordinal) {
             log("DEBUG  ", message, ex)
         }
@@ -36,7 +36,7 @@ class MiniLogger(val level: Level, val logTag: String = "") {
         i(null, message)
     }
 
-    fun i(ex: Exception?, message: () -> String) {
+    fun i(ex: Throwable?, message: () -> String) {
         if (Level.INFO.ordinal >= level.ordinal) {
             log("INFO   ", message, ex)
         }
@@ -46,7 +46,7 @@ class MiniLogger(val level: Level, val logTag: String = "") {
         w(null, message)
     }
 
-    fun w(ex: Exception?, message: () -> String) {
+    fun w(ex: Throwable?, message: () -> String) {
         if (Level.WARNING.ordinal >= level.ordinal) {
             log("WARNING", message, ex)
         }
@@ -56,13 +56,13 @@ class MiniLogger(val level: Level, val logTag: String = "") {
         e(null, message)
     }
 
-    fun e(ex: Exception?, message: () -> String) {
+    fun e(ex: Throwable?, message: () -> String) {
         if (Level.ERROR.ordinal >= level.ordinal) {
             log("ERROR  ", message, ex)
         }
     }
 
-    private fun log(level: String, message: () -> String, ex: Exception?) {
+    private fun log(level: String, message: () -> String, ex: Throwable?) {
         println("${getTimeStamp()} $level (${getTag()}) ${logTag}: ${message.invoke()}${ex?.let { "\n$it" } ?: ""}")
     }
 
