@@ -59,7 +59,7 @@ interface MiniReactor {
      *            The Class of the event to receive from the reactor.
      * @return The [Flowable] for the specific data.
      */
-    fun <T> lurker(clazz: Class<T>): Flowable<T>
+    fun <T> listen(clazz: Class<T>): Flowable<T>
 
     /**
      * Register a handler for specific internal events in reactor. Data will be emitted on the reactorScheduler thread.
@@ -71,10 +71,10 @@ interface MiniReactor {
      *            The Class of the event to receive from the reactor.
      * @return The [Flowable] for the specific data, with the id.
      */
-    fun <T> lurkerForSequences(clazz: Class<T>): Flowable<Pair<String, T>>
+    fun <T> listenForSequences(clazz: Class<T>): Flowable<Pair<String, T>>
 
     /**
-     * A combination of [lurker] and [dispatch].
+     * A combination of [listen] and [dispatch].
      * Will register a handler for specific data types on the reactor **and** and only related to this data injection id.
      * Only on the first subscribe the event will be dispatched.
      * Data will be emitted on the reactorScheduler thread.
@@ -90,11 +90,11 @@ interface MiniReactor {
      *          The id of the data injection.
      * @return The [Flowable] for the specific data and id.
      */
-    fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String): Flowable<T>
+    fun <T> listenAndDispatch(clazz: Class<T>, payload: Any, id: String): Flowable<T>
 
 
     /**
-     * A combination of [lurker] and [dispatch].
+     * A combination of [listen] and [dispatch].
      * Will register a handler for specific data types on the reactor **and** and only related to this data injection id.
      * Only on the first subscribe the event will be dispatched.
      * Data will be emitted on the reactorScheduler thread.
@@ -109,7 +109,7 @@ interface MiniReactor {
      *          The id of the data injection. Will generate a unique Id by default.
      * @return The [Flowable] for the specific data and id.
      */
-    fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any) = lurkAndDispatch(clazz, payload, generateId())
+    fun <T> listenAndDispatch(clazz: Class<T>, payload: Any) = listenAndDispatch(clazz, payload, generateId())
 
     companion object {
         var eventId = 0

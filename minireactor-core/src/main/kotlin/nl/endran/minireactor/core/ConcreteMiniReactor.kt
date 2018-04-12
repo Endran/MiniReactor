@@ -43,11 +43,11 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
                 .subscribe { dispatch(it) }
     }
 
-    override fun <T> lurker(clazz: Class<T>): Flowable<T> {
+    override fun <T> listen(clazz: Class<T>): Flowable<T> {
         return register(clazz).map { it.data }
     }
 
-    override fun <T> lurkerForSequences(clazz: Class<T>): Flowable<Pair<String, T>> {
+    override fun <T> listenForSequences(clazz: Class<T>): Flowable<Pair<String, T>> {
         return register(clazz).map { Pair(it.id, it.data) }
     }
 
@@ -59,7 +59,7 @@ class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaul
                 .map { it as Event<T> }
     }
 
-    override fun <T> lurkAndDispatch(clazz: Class<T>, payload: Any, id: String): Flowable<T> {
+    override fun <T> listenAndDispatch(clazz: Class<T>, payload: Any, id: String): Flowable<T> {
         var once = false
         return register(clazz)
                 .filter { it.id.startsWith(id) }
