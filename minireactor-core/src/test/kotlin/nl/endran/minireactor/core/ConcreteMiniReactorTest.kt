@@ -1,8 +1,7 @@
-package nl.endran
+package nl.endran.minireactor.core
 
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subscribers.TestSubscriber
-import nl.endran.minireactor.ConcreteMiniReactor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -33,7 +32,7 @@ class ConcreteMiniReactorTest {
     @Test
     fun shouldInformObservableWhenReactorIsDispatched() {
 
-        reactor.lurker(ExampleEvent1::class.java)
+        reactor.listen(ExampleEvent1::class.java)
                 .subscribe(testObserver1)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
@@ -52,7 +51,7 @@ class ConcreteMiniReactorTest {
 
         val testObserver = TestSubscriber<Pair<String, ExampleEvent1>>()
 
-        reactor.lurkerForSequences(ExampleEvent1::class.java)
+        reactor.listenForSequences(ExampleEvent1::class.java)
                 .subscribe(testObserver)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
@@ -73,9 +72,9 @@ class ConcreteMiniReactorTest {
             it.map { ExampleEvent2(it.toString()) }
         }
 
-        reactor.lurker(ExampleEvent1::class.java)
+        reactor.listen(ExampleEvent1::class.java)
                 .subscribe(testObserver1)
-        reactor.lurker(ExampleEvent2::class.java)
+        reactor.listen(ExampleEvent2::class.java)
                 .subscribe(testObserver2)
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
@@ -105,7 +104,7 @@ class ConcreteMiniReactorTest {
         }
 
         val event1 = ExampleEvent1("TEST_MESSAGE")
-        reactor.lurkAndDispatch(ExampleEvent2::class.java, event1)
+        reactor.listenAndDispatch(ExampleEvent2::class.java, event1)
                 .subscribe(testObserver2)
 
         testScheduler.triggerActions()

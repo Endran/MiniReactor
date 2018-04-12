@@ -34,7 +34,7 @@ Step 2. Add MiniReactor dependency
 
 To use *MiniReactor* you need to define how data is used in the system,
 and how you get data in and out of the system. For this 3 concepts are used;
-_Reaction_, _Lurker_, and a _Resource_.
+_Reaction_, _Listener_, and a _Resource_.
 
 **Resource**<br>
 A Resource can inject information in the reactor as follows:
@@ -51,20 +51,20 @@ miniReactor.reaction(SomeRequest::class.java) {
 }
 ```
 
-**Lurker**<br>
-A Lurker can lister for specific infomation, and consume it.
+**Listener**<br>
+A Listener can lister for specific infomation, and consume it.
 ```
-miniReactor.lurker(Object::class.java)
+miniReactor.listen(Object::class.java)
     .subscribe {
         System.out.println("Dispatched to the reactor: $it")
     }
 ```
 
-**Lurking Resource**<br>
-Finally a Lurking Resource can listen for specific information, for your request.
+**Listening Resource**<br>
+Finally a Listening Resource can listen for specific information, for your request.
 The reactor will make sure that you will only receive responses to your specific request.
 ```
-miniReactor.lurkAndDispatch(SomeResponse::class.java, SomeRequest("Hello!!!"))
+miniReactor.listenAndDispatch(SomeResponse::class.java, SomeRequest("Hello!!!"))
     .take(1)
     .subscribe {
         System.out.println("Received response for my specific request: $it")
@@ -104,7 +104,7 @@ class ExampleController(private val miniReactor: MiniReactor) {
 
     @RequestMapping(path = arrayOf("/hello"), method = arrayOf(RequestMethod.GET))
     fun hello(): Observable<SomeResponse> {
-        return miniReactor.lurkAndDispatch(
+        return miniReactor.listenAndDispatch(
                         SomeResponse::class.java,
                         SomeRequest("Hello!!! (${count++})"))
                 .take(1)
@@ -114,7 +114,7 @@ class ExampleController(private val miniReactor: MiniReactor) {
 
     @RequestMapping(path = arrayOf("/hi"), method = arrayOf(RequestMethod.GET))
     fun hi(): Observable<SomeResponse> {
-        return miniReactor.lurkAndDispatch(
+        return miniReactor.listenAndDispatch(
                         SomeResponse::class.java,
                         SomeRequest("Hi :) (${count++})"))
                 .take(1)
