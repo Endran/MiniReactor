@@ -26,7 +26,7 @@ subprojects {
     }
 
     group = "com.github.Endran"
-    version = "0.4.0"
+    version = "0.4.1"
 
     ext["assertjVersion"] = "3.6.2"
     ext["rxJavaVersion"] = "2.1.9"
