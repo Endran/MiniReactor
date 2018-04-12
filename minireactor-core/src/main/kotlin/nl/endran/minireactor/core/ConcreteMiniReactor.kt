@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
  */
 class ConcreteMiniReactor(private val reactorScheduler: Scheduler = createDefaultReactorScheduler()) : MiniReactor {
 
-    private val publishProcessor = PublishProcessor.create<Event<*>>()
+    private val publishProcessor = PublishProcessor.create<Event<*>>().toSerialized()
     private val reactor = publishProcessor.onBackpressureBuffer();
 
     override fun dispatch(data: Any, id: String): String {
